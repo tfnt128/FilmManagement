@@ -1,0 +1,20 @@
+﻿@page "/Filmmakers"
+@inject FilmmakerAPI filmmakerAPI
+<h3>Filmmakers</h3>
+@if(filmmakers != null)
+{
+    foreach(var filmmaker in filmmakers)
+    {
+        <p>@filmmaker.Name</p>
+    }
+}
+
+
+@code {
+    private ICollection<FilmmakerResponse>? filmmakers;
+
+    protected override async Task OnInitializedAsync()
+    {
+        filmmakers = await filmmakerAPI.GetFilmmakersAsync();
+    }
+}

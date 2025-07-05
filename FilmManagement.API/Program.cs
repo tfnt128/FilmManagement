@@ -15,6 +15,17 @@ builder.Services.AddTransient<DAL<Filmmaker>>();
 builder.Services.AddTransient<DAL<Films>>();
 builder.Services.AddTransient<DAL<Genre>>();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowBlazor", policy =>
+    {
+        policy.WithOrigins("https://localhost:7193")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -24,7 +35,7 @@ builder.Services.Configure
     = ReferenceHandler.IgnoreCycles);
 var app = builder.Build();
 
-
+app.UseCors("AllowBlazor");
 app.MapArtistasEndpoints();
 app.MapFilmsEndpoints();
 app.MapGenresEndpoints();
