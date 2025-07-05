@@ -1,5 +1,5 @@
 ﻿@inherits LayoutComponentBase
-<MudThemeProvider />
+<MudThemeProvider IsDarkMode="true" Theme="currentTheme" />
 <MudDialogProvider />
 <MudSnackbarProvider />
 
@@ -10,7 +10,14 @@
     <MudDrawer Open="true" ClipMode="DrawerClipMode.Always" Elevation="2">
         <NavMenu></NavMenu>
     </MudDrawer>
-    <MudMainContent>
+    <MudMainContent class="main-content pa-100">
         @Body
     </MudMainContent>
 </MudLayout>
+
+@code {
+    private MudTheme currentTheme = new MudTheme()
+        {
+            PaletteDark = FilmManagementPallete.CreatePallete
+        };
+}
