@@ -3,14 +3,10 @@
 <h3>Filmmakers</h3>
 @if(filmmakers != null)
 {
-    <MudGrid>
-    @foreach(var filmmaker in filmmakers)
+    foreach(var filmmaker in filmmakers)
     {
-        <MudItem xs="3">
-        <CardFilmmaker Filmmaker = "filmmaker" />
-        </MudItem>
+        <p>@filmmaker.Name</p>
     }
-    </MudGrid>
 }
 
 
