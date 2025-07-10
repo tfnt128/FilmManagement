@@ -1,4 +1,5 @@
-﻿using FilmManagement.Web.Responses;
+﻿using FilmManagement.Web.Requests;
+using FilmManagement.Web.Responses;
 using System.Net.Http.Json;
 
 public class FilmmakerAPI
@@ -14,5 +15,10 @@ public class FilmmakerAPI
     {
         return await
         _httpClient.GetFromJsonAsync<ICollection<FilmmakerResponse>>("Filmmakers");
+    }
+
+    public async Task AddFilmmakerAsync(FilmmakerRequest filmmaker)
+    {
+        await _httpClient.PostAsJsonAsync("Filmmakers", filmmaker);
     }
 }

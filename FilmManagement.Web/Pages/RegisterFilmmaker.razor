@@ -1,5 +1,47 @@
-﻿<h3>RegisterFilmmaker</h3>
+﻿@page "/RegisterFilmmaker"
+@inject FilmmakerAPI filmmakerAPI
+@inject NavigationManager navigationManager
+
+<MudPaper Class="px-8 pt-2 pb-4 mx-12 my-8" Justify="Justify.Center">
+
+    <MudText Class="mt-8" Typo="Typo.h4">Filmmaker Registration</MudText>
+
+    <MudForm>
+
+        <MudTextField Class="mt-4" T="string" Placeholder="Filmmaker's name"
+                      Variant="Variant.Outlined"
+                      @bind-Value="name"
+                      Required="true"
+                      RequiredError="Required field." />
+
+        <MudTextField Class="mt-4" T="string" Placeholder="Filmmaker's biography"
+                      Variant="Variant.Outlined"
+                      @bind-Value="bio"
+                      Lines="4"
+                      Required="true"
+                      RequiredError="Required field." />
+
+        <div class="d-flex align-center justify-space-between mt-4">
+            <MudButton Variant="Variant.Filled"
+                       @onclick="Register"
+                       Color="Color.Primary"
+                       Class="ml-auto">
+                Register
+            </MudButton>
+        </div>
+
+    </MudForm>
+</MudPaper>
 
 @code {
+    private string? name;
+    private string? bio;
 
+    private async Task Register()
+    {
+        var request = new FilmmakerRequest(name!, bio!);
+        await filmmakerAPI.AddFilmmakerAsync(request);
+        navigationManager.NavigateTo("/Filmmakers");
+    }
 }
+
