@@ -8,6 +8,11 @@
     <MudCardContent>
         <MudText Typo="Typo.body2">@Filmmaker!.Bio</MudText>
     </MudCardContent>
+    <MudCardActions>
+        <MudButton Color="Color.Warning"
+                   Variant="Variant.Outlined"
+                   Href=@($"/EditFilmmaker/{Filmmaker!.Name}")>Details</MudButton>
+    </MudCardActions>
 </MudCard>
 @code {
     [Parameter]
