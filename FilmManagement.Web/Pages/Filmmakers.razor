@@ -1,15 +1,18 @@
 ﻿@page "/Filmmakers"
 @inject FilmmakerAPI filmmakerAPI
-<h3>Filmmakers</h3>
-@if(filmmakers != null)
+<MudStack Class="mt-4 mb-4" Row="true" Justify="Justify.SpaceBetween">
+    <MudText Class="mb-4" Typo="Typo.h4">Registered Filmmakers </MudText>
+    <MudPagination Count="@totalPages" SelectedChanged="PageChange"></MudPagination>
+</MudStack>
+@if (paginatedFilmmakers != null)
 {
     <MudGrid>
-    @foreach(var filmmaker in filmmakers)
-    {
-        <MudItem xs="3">
-            <CardFilmmaker Filmmaker="filmmaker" />
-        </MudItem>
-    }
+        @foreach (var filmmaker in paginatedFilmmakers!)
+        {
+            <MudItem xs="3">
+                <CardFilmmaker Filmmaker="filmmaker" />
+            </MudItem>
+        }
     </MudGrid>
 }
 
@@ -17,8 +20,29 @@
 @code {
     private ICollection<FilmmakerResponse>? filmmakers;
 
+    private int range = 8;
+    private int totalItems;
+    private int totalPages;
+    private ICollection<FilmmakerResponse>? paginatedFilmmakers;
+
     protected override async Task OnInitializedAsync()
     {
         filmmakers = await filmmakerAPI.GetFilmmakersAsync();
+        if (filmmakers != null)
+        {
+            filmmakers = filmmakers.OrderByDescending(f => f.Id).ToList();
+            totalItems = filmmakers.Count();
+            totalPages = (int)Math.Ceiling((double)totalItems / range);
+            this.PageChange(1); 
+        }
+    }
+
+    private void PageChange(int page)
+    {
+        var index = page - 1;
+        paginatedFilmmakers = filmmakers!
+            .Skip(index * range)
+            .Take(range)
+            .ToList();
     }
 }

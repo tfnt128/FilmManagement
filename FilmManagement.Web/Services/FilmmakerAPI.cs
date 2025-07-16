@@ -26,9 +26,14 @@ public class FilmmakerAPI
     {
         await _httpClient.DeleteAsync($"filmmakers/{id}");
     }
+    public async Task UpdateFilmmakerAsync(FilmmakerRequestEdit filmmakerRequestEdit)
+    {
+        await _httpClient.PutAsJsonAsync("filmmakers", filmmakerRequestEdit);
+    }
 
     public async Task<FilmmakerResponse?> GetFilmmakerNameAsync(string name)
     {
         return await _httpClient.GetFromJsonAsync<FilmmakerResponse>($"filmmakers/{name}");
     }
+
 }

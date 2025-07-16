@@ -20,13 +20,12 @@
         Lines="4"
         Required="true"
         RequiredError="Required field." />
-
-        <div class="d-flex align-center justify-space-between mt-4">
-            <MudButton Variant="Variant.Filled"
-            @onclick="Delete"
-            Color="Color.Tertiary"
-            Class="ml-auto">
+        <div class="d-flex align-center mt-4">
+            <MudButton Variant="Variant.Filled" Color="Color.Error" @onclick="Delete">
                 Delete
+            </MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" class="ml-auto" @onclick="Edit">
+                Edit
             </MudButton>
         </div>
     </MudForm>
@@ -48,6 +47,13 @@
     private async Task Delete()
     {
         await filmmakerAPI.DeleteFilmmakerAsync(Filmmaker!.Id);
+        navigationManager.NavigateTo("/Filmmakers");
+    }
+
+    private async Task Edit()
+    {   
+        var request = new FilmmakerRequestEdit(Filmmaker!.Id, name!, bio!);
+        await filmmakerAPI.UpdateFilmmakerAsync(request);
         navigationManager.NavigateTo("/Filmmakers");
     }
 }
