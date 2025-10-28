@@ -3,29 +3,50 @@
 @inject NavigationManager navigationManager
 
 <MudPaper Class="px-8 pt-2 pb-4 mx-12 my-8" Justify="Justify.Center">
-
     <MudText Class="mt-8" Typo="Typo.h4">Filmmaker Registration</MudText>
 
     <MudForm>
+        <MudTextField Class="mt-4"
+        T="string"
+        Placeholder="Filmmaker's name"
+        Variant="Variant.Outlined"
+        @bind-Value="name"
+        Required="true"
+        RequiredError="Required field." />
 
-        <MudTextField Class="mt-4" T="string" Placeholder="Filmmaker's name"
-                      Variant="Variant.Outlined"
-                      @bind-Value="name"
-                      Required="true"
-                      RequiredError="Required field." />
+        <MudTextField Class="mt-4"
+        T="string"
+        Placeholder="Filmmaker's biography"
+        Variant="Variant.Outlined"
+        @bind-Value="bio"
+        Lines="4"
+        Required="true"
+        RequiredError="Required field." />
 
-        <MudTextField Class="mt-4" T="string" Placeholder="Filmmaker's biography"
-                      Variant="Variant.Outlined"
-                      @bind-Value="bio"
-                      Lines="4"
-                      Required="true"
-                      RequiredError="Required field." />
+        <MudImage Class="mt-4"
+        Src="@fileImage"
+        Width="200"
+        Height="200"
+        ObjectFit="ObjectFit.Contain" />
+
+        <MudFileUpload T="IBrowserFile"
+        Accept=".png, .jpg, .jpeg"
+        FilesChanged="UploadFile">
+            <ActivatorContent>
+                <MudButton HtmlTag="label"
+                Variant="Variant.Filled"
+                Color="Color.Primary"
+                StartIcon="@Icons.Material.Filled.PhotoCamera">
+                    Upload Image
+                </MudButton>
+            </ActivatorContent>
+        </MudFileUpload>
 
         <div class="d-flex align-center justify-space-between mt-4">
             <MudButton Variant="Variant.Filled"
-                       @onclick="Register"
-                       Color="Color.Primary"
-                       Class="ml-auto">
+            @onclick="Register"
+            Color="Color.Primary"
+            Class="ml-auto">
                 Register
             </MudButton>
         </div>
@@ -35,12 +56,30 @@
 @code {
     private string? name;
     private string? bio;
+    private string? fileImage;
+    private string? imageProfile;
 
     private async Task Register()
     {
-        var request = new FilmmakerRequest(name!, bio!);
+        var request = new FilmmakerRequest(name!, bio!, imageProfile!);
         await filmmakerAPI.AddFilmmakerAsync(request);
         navigationManager.NavigateTo("/Filmmakers");
+    }
+
+    private async Task UploadFile(IBrowserFile file)
+    {
+        long maxFilesSize = 1024 * 1024 * 15;
+        var format = file.ContentType;
+        var resizedImage = await file.RequestImageFileAsync(format, 200, 200);
+
+        using var fileStream = resizedImage.OpenReadStream();
+        using var memorySream = new MemoryStream();
+        await fileStream.CopyToAsync(memorySream);
+
+
+        var imageUpload = Convert.ToBase64String(memorySream.ToArray());
+        fileImage = $"data:{format};base64,{imageUpload}";
+        imageProfile = imageUpload;
     }
 }
 

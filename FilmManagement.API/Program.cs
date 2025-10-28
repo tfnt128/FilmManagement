@@ -36,6 +36,9 @@ builder.Services.Configure
 var app = builder.Build();
 
 app.UseCors("AllowBlazor");
+
+app.UseStaticFiles();
+
 app.MapArtistasEndpoints();
 app.MapFilmsEndpoints();
 app.MapGenresEndpoints();

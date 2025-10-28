@@ -1,4 +1,6 @@
-﻿namespace FilmManagement.Web.Requests
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace FilmManagement.Web.Requests
 {
-    public record FilmmakerRequest(string Name, string Bio);
+    public record FilmmakerRequest([Required] string Name, [Required] string bio, string? image);
 }

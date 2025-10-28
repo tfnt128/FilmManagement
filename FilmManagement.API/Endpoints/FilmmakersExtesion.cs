@@ -3,6 +3,7 @@ using FilmManagement.API.Responses;
 using FilmManagement.Shared.Data.Data;
 using FilmManagement.Shared.Models.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Hosting;
 
 namespace FilmManagement.API.Endpoints
 {
@@ -29,8 +30,24 @@ namespace FilmManagement.API.Endpoints
                 return Results.Ok(EntityToResponse(filmmaker));
             });
 
-            app.MapPost("/Filmmakers", ([FromBody] FilmmakerRequest filmmakerRequest, [FromServices] DAL<Filmmaker> dal) => {
-                var filmmaker = new Filmmaker(filmmakerRequest.Name, filmmakerRequest.Bio);
+            app.MapPost("/Filmmakers",async ([FromBody] FilmmakerRequest filmmakerRequest, [FromServices]IHostEnvironment env,[FromServices] DAL<Filmmaker> dal) => {
+
+                var name = filmmakerRequest.Name.Trim();
+                var imageFilmmaker = DateTime.Now.ToString("ddMMyyyyhhss") + "." +
+                name + ".jpeg";
+
+                var path = Path.Combine(env.ContentRootPath,
+                    "wwwroot", "ProfileImages", imageFilmmaker);
+
+                using MemoryStream ms = new MemoryStream(Convert.FromBase64String
+                    (filmmakerRequest.image));
+                using FileStream fs = new(path, FileMode.Create);
+                await ms.CopyToAsync(fs);
+
+                var filmmaker = new Filmmaker(filmmakerRequest.Name, filmmakerRequest.Bio)
+                {
+                    PictureProfile = $"/ProfileImage/{imageFilmmaker}"
+                };
                 dal.Add(filmmaker);
                 return Results.Ok(filmmaker);
             });
@@ -72,7 +89,7 @@ namespace FilmManagement.API.Endpoints
 
         private static FilmmakerResponse EntityToResponse(Filmmaker filmmaker)
         {
-            return new FilmmakerResponse(filmmaker.Id, filmmaker.Name, filmmaker.Bio);
+            return new FilmmakerResponse(filmmaker.Id, filmmaker.Name, filmmaker.Bio, filmmaker.PictureProfile);
         }
     }
 }

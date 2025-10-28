@@ -20,6 +20,7 @@
         Lines="4"
         Required="true"
         RequiredError="Required field." />
+
         <div class="d-flex align-center mt-4">
             <MudButton Variant="Variant.Filled" Color="Color.Error" @onclick="Delete">
                 Delete
@@ -34,6 +35,7 @@
 @code {
     private string? name;
     private string? bio;
+    private string? image;
     [Parameter]public string? filmmakerName { get; set; }
     public FilmmakerResponse? Filmmaker { get; set; }
 
@@ -52,7 +54,7 @@
 
     private async Task Edit()
     {   
-        var request = new FilmmakerRequestEdit(Filmmaker!.Id, name!, bio!);
+        var request = new FilmmakerRequestEdit(Filmmaker!.Id, name!, bio!, image!);
         await filmmakerAPI.UpdateFilmmakerAsync(request);
         navigationManager.NavigateTo("/Filmmakers");
     }

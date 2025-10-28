@@ -4,8 +4,8 @@
     {
         public int Id { get; init; }
 
-        public FilmmakerRequestEdit(int id, string name, string bio)
-            : base(name, bio)
+        public FilmmakerRequestEdit(int id, string name, string bio, string? image)
+            : base(name, bio, image)
         {
             Id = id;
         }

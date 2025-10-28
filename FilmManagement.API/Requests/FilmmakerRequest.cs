@@ -1,4 +1,4 @@
 ﻿namespace FilmManagement.API.Requests
 {
-    public record FilmmakerRequest(string Name, string Bio);
+    public record FilmmakerRequest(string Name, string Bio, string? image);
 }

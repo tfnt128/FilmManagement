@@ -1,5 +1,5 @@
 ﻿﻿<MudCard>
-    <MudCardMedia Image="images/cardFilmmaker.png"></MudCardMedia>
+    <MudCardMedia Image="@Image"></MudCardMedia>
     <MudCardHeader>
         <CardHeaderContent>
             <MudText Typo="Typo.h6">@Filmmaker!.Name</MudText>
@@ -10,11 +10,17 @@
     </MudCardContent>
     <MudCardActions>
         <MudButton Color="Color.Warning"
-                   Variant="Variant.Outlined"
-                   Href=@($"/EditFilmmaker/{Filmmaker!.Name}")>Details</MudButton>
+        Variant="Variant.Outlined"
+        Href=@($"/EditFilmmaker/{Filmmaker!.Name}")>Details</MudButton>
     </MudCardActions>
 </MudCard>
 @code {
     [Parameter]
     public FilmmakerResponse? Filmmaker { get; set; }
+    public string? Image { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Image = $"https://localhost:7237/{Filmmaker!.image}";       
+    }
 }
