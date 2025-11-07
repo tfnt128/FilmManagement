@@ -1,13 +1,172 @@
-﻿﻿﻿<MudNavMenu Class="mud-width-full mt-4">
+﻿<style>
+    @@keyframes pulse {
+        0%, 100% {
+            opacity: 1;
+        }
 
-    <MudNavLink Href="/" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
-    <MudNavGroup Title="Filmmakers" Icon="@Icons.Material.Filled.People" Expanded="true">
-        <MudNavLink Href="/Filmmakers">Show</MudNavLink>
-        <MudNavLink Href="/RegisterFilmmaker">Register</MudNavLink>
+        50% {
+            opacity: 0.5;
+        }
+    }
+
+    .mud-nav-link {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border-radius: 12px;
+        margin: 4px 8px;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .mud-nav-link::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 3px;
+            background: linear-gradient(180deg, #7828c8 0%, #c82878 100%);
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .mud-nav-link:hover::before,
+        .mud-nav-link-active::before {
+            transform: scaleY(1);
+        }
+
+        .mud-nav-link:hover {
+            background: rgba(120, 40, 200, 0.15) !important;
+            transform: translateX(8px);
+            box-shadow: 0 4px 12px rgba(120, 40, 200, 0.2);
+        }
+
+    .mud-nav-link-active {
+        background: linear-gradient(90deg, rgba(120, 40, 200, 0.2) 0%, rgba(120, 40, 200, 0.05) 100%) !important;
+        font-weight: 600;
+    }
+
+    .mud-nav-group {
+        margin: 8px 0;
+    }
+
+        .mud-nav-group .mud-nav-group-header {
+            transition: all 0.3s ease;
+            border-radius: 12px;
+            margin: 4px 8px;
+        }
+
+            .mud-nav-group .mud-nav-group-header:hover {
+                background: rgba(200, 40, 120, 0.15) !important;
+                transform: translateX(4px);
+            }
+
+    .nav-icon-wrapper {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, rgba(120, 40, 200, 0.2) 0%, rgba(200, 40, 120, 0.2) 100%);
+        margin-right: 12px;
+        transition: all 0.3s ease;
+    }
+
+    .mud-nav-link:hover .nav-icon-wrapper {
+        transform: rotate(10deg) scale(1.1);
+        background: linear-gradient(135deg, rgba(120, 40, 200, 0.4) 0%, rgba(200, 40, 120, 0.4) 100%);
+    }
+
+    .nav-menu-header {
+        padding: 24px 16px 16px 16px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        margin-bottom: 16px;
+    }
+
+    .nav-menu-title {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: rgba(255, 255, 255, 0.5);
+        margin: 16px 16px 8px 16px;
+    }
+</style>
+
+<MudNavMenu Class="mud-width-full">
+    <div class="nav-menu-header">
+        <MudText Typo="Typo.h6" Style="font-weight: 700; background: linear-gradient(90deg, #7828c8 0%, #c82878 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+            Film Manager
+        </MudText>
+        <MudText Typo="Typo.caption" Style="color: rgba(255, 255, 255, 0.5);">
+            Sort your movies
+        </MudText>
+    </div>
+
+    <div class="nav-menu-title">NAVIGATION</div>
+    <MudNavLink Href="/" Match="NavLinkMatch.All">
+        <div style="display: flex; align-items: center;">
+            <div class="nav-icon-wrapper">
+                <MudIcon Icon="@Icons.Material.Filled.Home" Size="Size.Small" />
+            </div>
+            <span>Home</span>
+        </div>
+    </MudNavLink>
+
+    <div class="nav-menu-title">MANAGEMENT</div>
+    <MudNavGroup Title="Filmmakers" Expanded="true">
+        <TitleContent>
+            <div style="display: flex; align-items: center;">
+                <div class="nav-icon-wrapper">
+                    <MudIcon Icon="@Icons.Material.Filled.People" Size="Size.Small" />
+                </div>
+                <span>Filmmakers</span>
+            </div>
+        </TitleContent>
+        <ChildContent>
+            <MudNavLink Href="/Filmmakers">
+                <div style="display: flex; align-items: center; padding-left: 20px;">
+                    <MudIcon Icon="@Icons.Material.Filled.Visibility" Size="Size.Small" Style="margin-right: 12px; opacity: 0.7;" />
+                    <span>View</span>
+                </div>
+            </MudNavLink>
+            <MudNavLink Href="/RegisterFilmmaker">
+                <div style="display: flex; align-items: center; padding-left: 20px;">
+                    <MudIcon Icon="@Icons.Material.Filled.PersonAdd" Size="Size.Small" Style="margin-right: 12px; opacity: 0.7;" />
+                    <span>Register Filmmaker</span>
+                </div>
+            </MudNavLink>
+        </ChildContent>
     </MudNavGroup>
-    <MudNavGroup Title="Films" Icon="@Icons.Material.Filled.QueueMusic" Expanded="true">
-        <MudNavLink Href="/FilmByFilmmaker">Films by Filmmakers</MudNavLink>
-        <MudNavLink Href="/FilmByGenre">Films by genre</MudNavLink>
-        <MudNavLink Href="/RegisterFilm">Register</MudNavLink>
+
+    <MudNavGroup Title="Films" Expanded="true">
+        <TitleContent>
+            <div style="display: flex; align-items: center;">
+                <div class="nav-icon-wrapper">
+                    <MudIcon Icon="@Icons.Material.Filled.Movie" Size="Size.Small" />
+                </div>
+                <span>Films</span>
+            </div>
+        </TitleContent>
+        <ChildContent>
+            <MudNavLink Href="/FilmByFilmmaker">
+                <div style="display: flex; align-items: center; padding-left: 20px;">
+                    <MudIcon Icon="@Icons.Material.Filled.PersonSearch" Size="Size.Small" Style="margin-right: 12px; opacity: 0.7;" />
+                    <span>All Films</span>
+                </div>
+            </MudNavLink>
+            <MudNavLink Href="/FilmByGenre">
+                <div style="display: flex; align-items: center; padding-left: 20px;">
+                    <MudIcon Icon="@Icons.Material.Filled.Category" Size="Size.Small" Style="margin-right: 12px; opacity: 0.7;" />
+                    <span>Films by Genre</span>
+                </div>
+            </MudNavLink>
+            <MudNavLink Href="/RegisterFilm">
+                <div style="display: flex; align-items: center; padding-left: 20px;">
+                    <MudIcon Icon="@Icons.Material.Filled.AddCircle" Size="Size.Small" Style="margin-right: 12px; opacity: 0.7;" />
+                    <span>Register Film</span>
+                </div>
+            </MudNavLink>
+        </ChildContent>
     </MudNavGroup>
 </MudNavMenu>

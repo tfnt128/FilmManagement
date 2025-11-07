@@ -3,88 +3,267 @@
 @inject GenreAPI _genreAPI
 @inject FilmAPI _filmAPI
 @inject NavigationManager navigationManager
+@inject ISnackbar Snackbar
 
-<MudPaper Class="px-8 pt-2 pb-4 mx-12 my-8" Justify="Justify.Center">
+<style>
+    @@keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translateY(40px);
+        }
 
-    <MudText Class="mt-8" Typo="Typo.h4">Film Register</MudText>
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
 
-    <MudForm>
+    .register-film-container {
+        animation: slideInUp 0.6s ease-out;
+        max-width: 900px;
+        margin: 0 auto;
+    }
 
-        <MudTextField Class="mt-4" T="string" Placeholder="Title"
-                      @bind-Value="name"
-                      Variant="Variant.Outlined"
-                      Required="true"
-                      RequiredError="Required field." />
+    .film-form-paper {
+        background: linear-gradient(135deg, rgba(30, 30, 30, 0.95) 0%, rgba(20, 20, 20, 0.98) 100%) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(10px);
+        position: relative;
+        overflow: hidden;
+        border-radius: 20px;
+    }
 
-        <MudSelect Class="mt-4" T="FilmmakerResponse" Label="Filmmakers"
-                   Variant="Variant.Filled"
-                   ValueChanged="SelectedFilmmaker"
-                   AnchorOrigin="Origin.BottomCenter">
-            @if (filmmakers is not null)
-            {
-                @foreach (var filmmaker in filmmakers)
-                {
-                    <MudSelectItem Value="@filmmaker">@filmmaker.Name</MudSelectItem>
-                }
-            }
-        </MudSelect>
+        .film-form-paper::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #c82878 0%, #7828c8 100%);
+        }
 
-        <MudNumericField Class="mt-4"
-                         Placeholder="Release Year"
-                         @bind-Value="releaseYear"
-                         Variant="Variant.Outlined"
-                         Lines="1"
-                         Required="true"
-                         RequiredError="Required field." />
+    .film-header {
+        padding: 32px 32px 24px 32px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
 
-        <MudSelect Class="mt-4" T="GenreResponse" Label="Genres"
-                   Variant="Variant.Filled"
-                   ValueChanged="SelectedGenre"
-                   AnchorOrigin="Origin.BottomCenter">
-            @if (genres is not null)
-            {
-                @foreach (var genre in genres)
-                {
-                    <MudSelectItem Value="@genre">@genre.Name</MudSelectItem>
-                }
-            }
-            @if (GenreSelected is not null)
-            {
-                foreach (var genre in GenreSelected)
-                {
-                    <MudAlert Severity="Severity.Info">@(genre.Name) Genre added.</MudAlert>
-                }
+    .film-title {
+        font-size: 2rem;
+        font-weight: 800;
+        background: linear-gradient(90deg, #c82878 0%, #7828c8 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 8px;
+    }
 
-            }
-        </MudSelect>
+    .film-subtitle {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.95rem;
+    }
 
-        <div class="d-flex align-center justify-space-between mt-4">
-            <MudButton Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       @onclick="Register"
-                       Class="ml-auto">
-                Register
-            </MudButton>
-            <MudButton Variant="Variant.Filled"
-                       Color="Color.Info"
-                       Class="ml-3">
-                Back
-            </MudButton>
+    .film-content {
+        padding: 32px;
+    }
+
+    .genre-chip-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 12px;
+        padding: 16px;
+        background: rgba(120, 40, 200, 0.05);
+        border-radius: 12px;
+        border: 1px solid rgba(120, 40, 200, 0.2);
+    }
+
+    .genre-chip {
+        animation: scaleIn 0.3s ease-out;
+    }
+
+    @@keyframes scaleIn {
+        from {
+            opacity: 0;
+            transform: scale(0.8);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    .film-buttons {
+        display: flex;
+        gap: 16px;
+        justify-content: flex-end;
+        padding: 24px 32px;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        background: rgba(0, 0, 0, 0.2);
+    }
+
+    .input-section {
+        margin-bottom: 28px;
+        transition: all 0.3s ease;
+    }
+
+        .input-section:focus-within {
+            transform: scale(1.01);
+        }
+
+    .section-label {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.7);
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+</style>
+
+<div class="register-film-container">
+    <MudPaper Class="film-form-paper" Elevation="8">
+        <div class="film-header">
+            <MudText Class="film-title">
+                <MudIcon Icon="@Icons.Material.Filled.MovieCreation" Style="margin-right: 12px; vertical-align: middle;" />
+                Movie Registration
+            </MudText>
+            <MudText Class="film-subtitle">
+                Add a new movie to your library
+            </MudText>
         </div>
 
-    </MudForm>
+        <MudForm @ref="form" Class="film-content">
+            <div class="input-section">
+                <MudTextField T="string"
+                              Label="Movie Title"
+                              @bind-Value="name"
+                              Variant="Variant.Outlined"
+                              Required="true"
+                              RequiredError="The title is required"
+                              HelperText="Enter the full movie title"
+                              Adornment="Adornment.Start"
+                              AdornmentIcon="@Icons.Material.Filled.Movie" />
+            </div>
 
-</MudPaper>
+            <div class="input-section">
+                <div class="section-label">
+                    <MudIcon Icon="@Icons.Material.Filled.Person" Size="Size.Small" />
+                    <span>Filmmaker</span>
+                </div>
+                <MudSelect T="FilmmakerResponse"
+                           Label="Select a Filmmaker"
+                           Variant="Variant.Outlined"
+                           ValueChanged="SelectedFilmmaker"
+                           AnchorOrigin="Origin.BottomCenter"
+                           Dense="false">
+                    @if (filmmakers is not null)
+                    {
+                        @foreach (var filmmaker in filmmakers)
+                        {
+                            <MudSelectItem Value="@filmmaker">
+                                @filmmaker.Name
+                            </MudSelectItem>
+                        }
+                    }
+                </MudSelect>
+            </div>
+
+            <div class="input-section">
+                <MudNumericField T="int"
+                                 Label="Release Year"
+                                 @bind-Value="releaseYear"
+                                 Variant="Variant.Outlined"
+                                 Required="true"
+                                 RequiredError="The year is required"
+                                 HelperText="Ex: 2024"
+                                 Adornment="Adornment.Start"
+                                 AdornmentIcon="@Icons.Material.Filled.CalendarToday"
+                                 Min="1800"
+                                 Max="2100" />
+            </div>
+
+            <div class="input-section">
+                <div class="section-label">
+                    <MudIcon Icon="@Icons.Material.Filled.Category" Size="Size.Small" />
+                    <span>Movie Genres</span>
+                </div>
+                <MudSelect T="GenreResponse"
+                           Label="Add Genre"
+                           Variant="Variant.Outlined"
+                           ValueChanged="SelectedGenre"
+                           AnchorOrigin="Origin.BottomCenter">
+                    @if (genres is not null)
+                    {
+                        @foreach (var genre in genres)
+                        {
+                            <MudSelectItem Value="@genre">
+                                @genre.Name
+                            </MudSelectItem>
+                        }
+                    }
+                </MudSelect>
+
+                @if (GenreSelected is not null && GenreSelected.Any())
+                {
+                    <div class="genre-chip-container">
+                        <MudText Typo="Typo.caption" Style="width: 100%; color: rgba(255, 255, 255, 0.5); margin-bottom: 8px;">
+                            Selected genres:
+                        </MudText>
+                        @foreach (var genre in GenreSelected)
+                        {
+                            <MudChip Class="genre-chip"
+                                     Color="Color.Primary"
+                                     Size="Size.Medium"
+                                     Icon="@Icons.Material.Filled.LocalMovies"
+                                     OnClose="@(() => RemoveGenre(genre))">
+                                @genre.Name
+                            </MudChip>
+                        }
+                    </div>
+                }
+            </div>
+        </MudForm>
+
+        <div class="film-buttons">
+            <MudButton Variant="Variant.Outlined"
+                       Color="Color.Default"
+                       StartIcon="@Icons.Material.Filled.ArrowBack"
+                       OnClick="@(() => navigationManager.NavigateTo("/FilmByFilmmaker"))"
+                       Size="Size.Large">
+                Cancel
+            </MudButton>
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Secondary"
+                       StartIcon="@Icons.Material.Filled.Save"
+                       OnClick="Register"
+                       Disabled="@isSubmitting"
+                       Size="Size.Large">
+                @if (isSubmitting)
+                {
+                    <MudProgressCircular Size="Size.Small" Indeterminate="true" Style="margin-right: 8px;" />
+                    <span>Saving...</span>
+                }
+                else
+                {
+                    <span>Register Movie</span>
+                }
+            </MudButton>
+        </div>
+    </MudPaper>
+</div>
 
 @code {
+    private MudForm form;
     private int releaseYear;
     private string? name;
-
     private ICollection<FilmmakerResponse>? filmmakers;
     private ICollection<GenreResponse>? genres;
-
     private List<GenreResponse>? GenreSelected { get; set; } = new();
     private FilmmakerResponse? FilmmakerFilm { get; set; }
+    private bool isSubmitting = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -96,28 +275,67 @@
     {
         FilmmakerFilm = filmmaker;
     }
+
     private void SelectedGenre(GenreResponse genre)
     {
         if (GenreSelected is not null && !GenreSelected.Contains(genre))
         {
             GenreSelected.Add(genre);
+            Snackbar.Add($"Genre '{genre.Name}' added!", Severity.Success);
         }
     }
 
+    private void RemoveGenre(GenreResponse genre)
+    {
+        GenreSelected?.Remove(genre);
+        Snackbar.Add($"Genre '{genre.Name}' removed", Severity.Info);
+    }
+
     private List<GenreRequest> GenresRequest { get; set; } = new();
+
     public async Task Register()
     {
-        if (GenreSelected is not null)
+        await form.Validate();
+        if (!form.IsValid)
         {
+            Snackbar.Add("Please fill in all required fields", Severity.Warning);
+            return;
+        }
+
+        if (FilmmakerFilm is null)
+        {
+            Snackbar.Add("Please select a filmmaker", Severity.Warning);
+            return;
+        }
+
+        if (GenreSelected is null || !GenreSelected.Any())
+        {
+            Snackbar.Add("Please add at least one genre", Severity.Warning);
+            return;
+        }
+
+        isSubmitting = true;
+        try
+        {
+            GenresRequest.Clear();
             foreach (var genre in GenreSelected)
             {
-                GenresRequest.Add(new GenreRequest(genre.Name,
-                genre.Description));
+                GenresRequest.Add(new GenreRequest(genre.Name, genre.Description));
             }
+
+            var filmRequest = new FilmRequest(name!, FilmmakerFilm!.Id, releaseYear, GenresRequest);
+            await _filmAPI.AddFilmAsync(filmRequest);
+            Snackbar.Add("Movie successfully registered!", Severity.Success);
+            await Task.Delay(500);
+            navigationManager.NavigateTo("/FilmByFilmmaker");
         }
-        var filmRequest = new FilmRequest(name!, FilmmakerFilm!.Id,
-            releaseYear, GenresRequest);
-        await _filmAPI.AddFilmAsync(filmRequest);
-        navigationManager.NavigateTo("/FilmByFilmmaker");
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error registering movie: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
     }
 }

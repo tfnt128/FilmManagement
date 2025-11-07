@@ -1,61 +1,270 @@
 ﻿@page "/EditFilmmaker/{filmmakerName}"
 @inject FilmmakerAPI filmmakerAPI
 @inject NavigationManager navigationManager
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
 
-<MudPaper Class="px-8 pt-2 pb-4 mx-12 my-8" Justify="Justify.Center">
+<style>
+    @@keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translateY(40px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
 
-    <MudText Class="mt-8" Typo="Typo.h4">Filmmaker Editing</MudText>
+    .edit-container {
+        animation: slideInUp 0.6s ease-out;
+        max-width: 800px;
+        margin: 0 auto;
+    }
 
-    <MudForm>
+    .edit-paper {
+        background: linear-gradient(135deg, rgba(30, 30, 30, 0.95) 0%, rgba(20, 20, 20, 0.98) 100%) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(10px);
+        position: relative;
+        overflow: hidden;
+        border-radius: 20px;
+    }
 
-        <MudTextField Class="mt-4" T="string" Placeholder="Filmmaker's name"
-        Variant="Variant.Outlined"
-        @bind-Value="name"
-        Required="true"
-        RequiredError="Required field." />
+    .edit-paper::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #7828c8 0%, #c82878 100%);
+    }
 
-        <MudTextField Class="mt-4" T="string" Placeholder="Filmmaker's biography"
-        Variant="Variant.Outlined"
-        @bind-Value="bio"
-        Lines="4"
-        Required="true"
-        RequiredError="Required field." />
+    .edit-header {
+        padding: 32px 32px 24px 32px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
 
-        <div class="d-flex align-center mt-4">
-            <MudButton Variant="Variant.Filled" Color="Color.Error" @onclick="Delete">
-                Delete
-            </MudButton>
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" class="ml-auto" @onclick="Edit">
-                Edit
-            </MudButton>
-        </div>
-    </MudForm>
-</MudPaper>
+    .edit-title {
+        font-size: 2rem;
+        font-weight: 800;
+        background: linear-gradient(90deg, #7828c8 0%, #c82878 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 8px;
+    }
+
+    .edit-subtitle {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.95rem;
+    }
+
+    .edit-content {
+        padding: 32px;
+    }
+
+    .edit-buttons {
+        display: flex;
+        gap: 16px;
+        justify-content: space-between;
+        padding: 24px 32px;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        background: rgba(0, 0, 0, 0.2);
+    }
+
+    .input-field {
+        margin-bottom: 24px;
+        transition: all 0.3s ease;
+    }
+
+    .input-field:focus-within {
+        transform: scale(1.01);
+    }
+
+    .loading-overlay {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 100px 20px;
+    }
+</style>
+
+<div class="edit-container">
+    @if (isLoading)
+    {
+        <MudPaper Class="edit-paper" Elevation="8">
+            <div class="loading-overlay">
+                <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
+                <MudText Typo="Typo.h6" Style="margin-top: 24px; color: rgba(255, 255, 255, 0.7);">
+                    Loading data...
+                </MudText>
+            </div>
+        </MudPaper>
+    }
+    else
+    {
+        <MudPaper Class="edit-paper" Elevation="8">
+            <div class="edit-header">
+                <MudText Class="edit-title">
+                    <MudIcon Icon="@Icons.Material.Filled.Edit" Style="margin-right: 12px; vertical-align: middle;" />
+                    Edit Filmmaker
+                </MudText>
+                <MudText Class="edit-subtitle">
+                    Update Filmmmaker description
+                </MudText>
+            </div>
+
+            <MudForm @ref="form" Class="edit-content">
+                <div class="input-field">
+                    <MudTextField T="string" 
+                                Label="Name"
+                                @bind-Value="name"
+                                Variant="Variant.Outlined"
+                                Required="true"
+                                RequiredError="Name is required"
+                                Adornment="Adornment.Start"
+                                AdornmentIcon="@Icons.Material.Filled.Person" />
+                </div>
+
+                <div class="input-field">
+                    <MudTextField T="string" 
+                                Label="Biografy"
+                                @bind-Value="bio"
+                                Variant="Variant.Outlined"
+                                Lines="6"
+                                Required="true"
+                                  RequiredError="Biografy is required"
+                                Adornment="Adornment.Start"
+                                AdornmentIcon="@Icons.Material.Filled.Description" />
+                </div>
+            </MudForm>
+
+            <div class="edit-buttons">
+                <MudButton Variant="Variant.Filled"
+                          Color="Color.Error"
+                          StartIcon="@Icons.Material.Filled.Delete"
+                          OnClick="ConfirmDelete"
+                          Size="Size.Large">
+                    Excluir
+                </MudButton>
+
+                <div style="display: flex; gap: 16px;">
+                    <MudButton Variant="Variant.Outlined"
+                              Color="Color.Default"
+                              StartIcon="@Icons.Material.Filled.ArrowBack"
+                              OnClick="@(() => navigationManager.NavigateTo("/Filmmakers"))"
+                              Size="Size.Large">
+                        Cancel
+                    </MudButton>
+                    <MudButton Variant="Variant.Filled"
+                              Color="Color.Primary"
+                              StartIcon="@Icons.Material.Filled.Save"
+                              OnClick="Edit"
+                              Disabled="@isSubmitting"
+                              Size="Size.Large">
+                        @if (isSubmitting)
+                        {
+                            <MudProgressCircular Size="Size.Small" Indeterminate="true" Style="margin-right: 8px;" />
+                            <span>Saving...</span>
+                        }
+                        else
+                        {
+                            <span>Save</span>
+                        }
+                    </MudButton>
+                </div>
+            </div>
+        </MudPaper>
+    }
+</div>
 
 @code {
+    private MudForm form;
     private string? name;
     private string? bio;
     private string? image;
-    [Parameter]public string? filmmakerName { get; set; }
+    private bool isLoading = true;
+    private bool isSubmitting = false;
+
+    [Parameter]
+    public string? filmmakerName { get; set; }
     public FilmmakerResponse? Filmmaker { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
+        await LoadFilmmaker();
+    }
+
+    private async Task LoadFilmmaker()
+    {
+        isLoading = true;
+        await Task.Delay(300);
+
         Filmmaker = await filmmakerAPI.GetFilmmakerNameAsync(filmmakerName!);
         name = Filmmaker?.Name;
         bio = Filmmaker?.Bio;
+
+        isLoading = false;
+    }
+
+    private async Task ConfirmDelete()
+    {
+        bool? result = await DialogService.ShowMessageBox(
+            "Confirm Deletion",
+            $"Are you sure you want to delete the filmmaker '{name}'? This action cannot be undone.",
+            yesText: "Delete", cancelText: "Cancel",
+            options: new DialogOptions { MaxWidth = MaxWidth.Small });
+
+        if (result == true)
+        {
+            await Delete();
+        }
     }
 
     private async Task Delete()
     {
-        await filmmakerAPI.DeleteFilmmakerAsync(Filmmaker!.Id);
-        navigationManager.NavigateTo("/Filmmakers");
+        try
+        {
+            await filmmakerAPI.DeleteFilmmakerAsync(Filmmaker!.Id);
+            Snackbar.Add("Filmmaker successfully deleted!", Severity.Success);
+            await Task.Delay(500);
+            navigationManager.NavigateTo("/Filmmakers");
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error deleting filmmaker: {ex.Message}", Severity.Error);
+        }
     }
 
     private async Task Edit()
-    {   
-        var request = new FilmmakerRequestEdit(Filmmaker!.Id, name!, bio!, image!);
-        await filmmakerAPI.UpdateFilmmakerAsync(request);
-        navigationManager.NavigateTo("/Filmmakers");
+    {
+        await form.Validate();
+        if (!form.IsValid)
+        {
+            Snackbar.Add("Please fill in all required fields", Severity.Warning);
+            return;
+        }
+
+        isSubmitting = true;
+        try
+        {
+            var request = new FilmmakerRequestEdit(Filmmaker!.Id, name!, bio!, image!);
+            await filmmakerAPI.UpdateFilmmakerAsync(request);
+            Snackbar.Add("Filmmaker successfully updated!", Severity.Success);
+            await Task.Delay(500);
+            navigationManager.NavigateTo("/Filmmakers");
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error updating filmmaker: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
     }
+
 }

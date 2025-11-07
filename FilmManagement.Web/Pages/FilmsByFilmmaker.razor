@@ -1,45 +1,296 @@
 ﻿@page "/FilmByFilmmaker"
-
 @inject FilmAPI _filmAPI
-<MudStack Class="mt-4 mb-4" Row="true" Justify="Justify.SpaceBetween">
-    <MudText Class="mb-4" Typo="Typo.h4">Registered Films </MudText>
-    <MudPagination Count="@totalPages" SelectedChanged="PageChange"></MudPagination>
-</MudStack>
-@if (paginatedFilms != null)
+
+<style>
+    @@keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes scaleIn {
+        from {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    @@keyframes shimmer {
+        0% { background-position: -1000px 0; }
+        100% { background-position: 1000px 0; }
+    }
+
+    .films-header {
+        animation: fadeInUp 0.6s ease-out;
+        background: linear-gradient(135deg, rgba(200, 40, 120, 0.1) 0%, rgba(120, 40, 200, 0.1) 100%);
+        border-radius: 20px;
+        padding: 32px;
+        margin-bottom: 32px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .films-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+        animation: shimmer 3s infinite;
+    }
+
+    .films-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        background: linear-gradient(90deg, #ffffff 0%, #b0b0b0 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 8px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .films-subtitle {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 1rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .stats-row {
+        display: flex;
+        gap: 20px;
+        margin-top: 24px;
+        position: relative;
+        z-index: 1;
+        flex-wrap: wrap;
+    }
+
+    .stat-box {
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 12px;
+        padding: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        flex: 1;
+        min-width: 140px;
+        transition: all 0.3s ease;
+        cursor: default;
+    }
+
+    .stat-box:hover {
+        background: rgba(255, 255, 255, 0.05);
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(200, 40, 120, 0.2);
+    }
+
+    .stat-value {
+        font-size: 2.2rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #c82878 0%, #7828c8 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        line-height: 1;
+    }
+
+    .stat-title {
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 0.875rem;
+        margin-top: 8px;
+        font-weight: 500;
+    }
+
+    .film-card {
+        animation: scaleIn 0.5s ease-out backwards;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .film-card:hover {
+        transform: translateY(-12px) scale(1.03);
+    }
+
+    .pagination-wrapper {
+        animation: fadeInUp 0.6s ease-out 0.2s backwards;
+        display: flex;
+        justify-content: center;
+        margin-top: 48px;
+    }
+
+    .mud-pagination {
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 16px;
+        padding: 12px 20px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .empty-container {
+        text-align: center;
+        padding: 100px 20px;
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    .empty-icon {
+        font-size: 140px;
+        opacity: 0.25;
+        margin-bottom: 32px;
+        background: linear-gradient(135deg, #c82878 0%, #7828c8 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .loading-screen {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 140px 20px;
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    .loading-text {
+        margin-top: 32px;
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 1.2rem;
+    }
+
+    .action-button {
+        margin-top: 24px;
+        transition: all 0.3s ease;
+    }
+
+    .action-button:hover {
+        transform: scale(1.05);
+        box-shadow: 0 8px 24px rgba(200, 40, 120, 0.4);
+    }
+</style>
+
+<div class="films-header">
+    <MudText Class="films-title">Movie Catalog</MudText>
+    <MudText Class="films-subtitle">Explore all movies organized by filmmaker</MudText>
+    
+    @if (films != null)
+    {
+        <div class="stats-row">
+            <div class="stat-box">
+                <div class="stat-value">@totalItems</div>
+                <div class="stat-title">Total Movies</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value">@totalPages</div>
+                <div class="stat-title">Pages</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value">@range</div>
+                <div class="stat-title">Movies per Page</div>
+            </div>
+        </div>
+    }
+</div>
+
+@if (isLoading)
 {
-    <MudGrid>
-        @foreach (var films in paginatedFilms!)
+    <div class="loading-screen">
+        <MudProgressCircular Color="Color.Secondary" Size="Size.Large" Indeterminate="true" />
+        <MudText Typo="Typo.h6" Class="loading-text">
+            Loading movies...
+        </MudText>
+    </div>
+}
+else if (paginatedFilms != null && paginatedFilms.Any())
+{
+    <MudGrid Spacing="4">
+        @foreach (var film in paginatedFilms)
         {
-            <MudItem xs="3">
-                <CardFilm Film="films" />
+            <MudItem xs="12" sm="6" md="4" lg="3" 
+                     Class="film-card" 
+                     Style="animation-delay: @(paginatedFilms.ToList().IndexOf(film) * 0.05)s">
+                <CardFilm Film="film" />
             </MudItem>
         }
     </MudGrid>
+
+    <div class="pagination-wrapper">
+        <MudPagination Count="@totalPages" 
+                      Selected="@currentPage"
+                      SelectedChanged="PageChange"
+                      Color="Color.Secondary"
+                      Variant="Variant.Filled"
+                      ShowFirstButton="true"
+                      ShowLastButton="true" />
+    </div>
+}
+else
+{
+    <div class="empty-container">
+        <MudIcon Icon="@Icons.Material.Filled.MovieFilter" Class="empty-icon" />
+        <MudText Typo="Typo.h3" Style="margin-bottom: 16px; color: rgba(255, 255, 255, 0.7); font-weight: 700;">
+            No movies registered
+        </MudText>
+        <MudText Typo="Typo.body1" Style="color: rgba(255, 255, 255, 0.5); margin-bottom: 32px; font-size: 1.1rem;">
+            Add your first movie to the collection
+        </MudText>
+        <MudButton Variant="Variant.Filled" 
+                   Color="Color.Secondary" 
+                   StartIcon="@Icons.Material.Filled.Add"
+                   Href="/RegisterFilm"
+                   Size="Size.Large"
+                   Class="action-button">
+            Register Movie
+        </MudButton>
+    </div>
 }
 
 
 @code {
     private ICollection<FilmResponse>? films;
-
     private int range = 8;
     private int totalItems;
     private int totalPages;
+    private int currentPage = 1;
     private ICollection<FilmResponse>? paginatedFilms;
+    private bool isLoading = true;
 
     protected override async Task OnInitializedAsync()
     {
+        await LoadFilms();
+    }
+
+    private async Task LoadFilms()
+    {
+        isLoading = true;
+        StateHasChanged();
+        
+        await Task.Delay(400);
+        
         films = await _filmAPI.GetFilmsAsync();
         if (films != null)
         {
             films = films.OrderByDescending(f => f.Id).ToList();
             totalItems = films.Count();
             totalPages = (int)Math.Ceiling((double)totalItems / range);
-            this.PageChange(1); 
+            PageChange(1); 
         }
+        
+        isLoading = false;
+        StateHasChanged();
     }
 
     private void PageChange(int page)
     {
+        currentPage = page;
         var index = page - 1;
         paginatedFilms = films!
             .Skip(index * range)

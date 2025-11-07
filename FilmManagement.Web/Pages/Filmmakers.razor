@@ -1,44 +1,269 @@
 ﻿@page "/Filmmakers"
 @inject FilmmakerAPI filmmakerAPI
-<MudStack Class="mt-4 mb-4" Row="true" Justify="Justify.SpaceBetween">
-    <MudText Class="mb-4" Typo="Typo.h4">Registered Filmmakers </MudText>
-    <MudPagination Count="@totalPages" SelectedChanged="PageChange"></MudPagination>
-</MudStack>
-@if (paginatedFilmmakers != null)
+
+<style>
+    @@keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes scaleIn {
+        from {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    .page-header {
+        animation: fadeInUp 0.6s ease-out;
+        background: linear-gradient(135deg, rgba(120, 40, 200, 0.1) 0%, rgba(200, 40, 120, 0.1) 100%);
+        border-radius: 20px;
+        padding: 32px;
+        margin-bottom: 32px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .page-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(120, 40, 200, 0.1) 0%, transparent 70%);
+        animation: rotate 20s linear infinite;
+    }
+
+    @@keyframes rotate {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+
+    .page-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        background: linear-gradient(90deg, #ffffff 0%, #b0b0b0 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 8px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .page-subtitle {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 1rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .stats-container {
+        display: flex;
+        gap: 24px;
+        margin-top: 24px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .stat-card {
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 12px;
+        padding: 16px 24px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        flex: 1;
+        transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+        background: rgba(255, 255, 255, 0.05);
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(120, 40, 200, 0.2);
+    }
+
+    .stat-number {
+        font-size: 2rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #7828c8 0%, #c82878 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .stat-label {
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 0.875rem;
+        margin-top: 4px;
+    }
+
+    .filmmaker-card {
+        animation: scaleIn 0.5s ease-out backwards;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .filmmaker-card:hover {
+        transform: translateY(-8px) scale(1.02);
+    }
+
+    .pagination-container {
+        animation: fadeInUp 0.6s ease-out 0.2s backwards;
+        display: flex;
+        justify-content: center;
+        margin-top: 48px;
+    }
+
+    .mud-pagination {
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 16px;
+        padding: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 80px 20px;
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    .empty-state-icon {
+        font-size: 120px;
+        opacity: 0.3;
+        margin-bottom: 24px;
+    }
+
+    .loading-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 120px 20px;
+        animation: fadeInUp 0.6s ease-out;
+    }
+</style>
+
+<div class="page-header">
+    <MudText Class="page-title">Filmmakers</MudText>
+    <MudText Class="page-subtitle">Explore and manage the registered filmmakers</MudText>
+    
+    @if (filmmakers != null)
+    {
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-number">@totalItems</div>
+                <div class="stat-label">Total Filmmakers</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">@totalPages</div>
+                <div class="stat-label">Pages</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">@range</div>
+                <div class="stat-label">By Page</div>
+            </div>
+        </div>
+    }
+</div>
+
+@if (isLoading)
 {
-    <MudGrid>
-        @foreach (var filmmaker in paginatedFilmmakers!)
+    <div class="loading-container">
+        <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
+        <MudText Typo="Typo.h6" Style="margin-top: 24px; color: rgba(255, 255, 255, 0.7);">
+            Loading filmmakers...
+        </MudText>
+    </div>
+}
+else if (paginatedFilmmakers != null && paginatedFilmmakers.Any())
+{
+    <MudGrid Spacing="4">
+        @foreach (var filmmaker in paginatedFilmmakers)
         {
-            <MudItem xs="3">
+            <MudItem xs="12" sm="6" md="4" lg="3" 
+                     Class="filmmaker-card" 
+                     Style="animation-delay: @(paginatedFilmmakers.ToList().IndexOf(filmmaker) * 0.05)s">
                 <CardFilmmaker Filmmaker="filmmaker" />
             </MudItem>
         }
     </MudGrid>
-}
 
+    <div class="pagination-container">
+        <MudPagination Count="@totalPages" 
+                      Selected="@currentPage"
+                      SelectedChanged="PageChange"
+                      Color="Color.Primary"
+                      Variant="Variant.Filled"
+                      ShowFirstButton="true"
+                      ShowLastButton="true" />
+    </div>
+}
+else
+{
+    <div class="empty-state">
+        <MudIcon Icon="@Icons.Material.Filled.PersonOff" Class="empty-state-icon" />
+        <MudText Typo="Typo.h4" Style="margin-bottom: 16px; color: rgba(255, 255, 255, 0.7);">
+            filmmaker not found
+        </MudText>
+        <MudText Typo="Typo.body1" Style="color: rgba(255, 255, 255, 0.5); margin-bottom: 32px;">
+            Get started by creating your first filmmaker
+        </MudText>
+        <MudButton Variant="Variant.Filled" 
+                   Color="Color.Primary" 
+                   StartIcon="@Icons.Material.Filled.PersonAdd"
+                   Href="/RegisterFilmmaker"
+                   Size="Size.Large">
+            Register Filmmaker
+        </MudButton>
+    </div>
+}
 
 @code {
     private ICollection<FilmmakerResponse>? filmmakers;
-
     private int range = 8;
     private int totalItems;
     private int totalPages;
+    private int currentPage = 1;
     private ICollection<FilmmakerResponse>? paginatedFilmmakers;
+    private bool isLoading = true;
 
     protected override async Task OnInitializedAsync()
     {
+        await LoadFilmmakers();
+    }
+
+    private async Task LoadFilmmakers()
+    {
+        isLoading = true;
+        StateHasChanged();
+        
+        await Task.Delay(300);
+        
         filmmakers = await filmmakerAPI.GetFilmmakersAsync();
         if (filmmakers != null)
         {
             filmmakers = filmmakers.OrderByDescending(f => f.Id).ToList();
             totalItems = filmmakers.Count();
             totalPages = (int)Math.Ceiling((double)totalItems / range);
-            this.PageChange(1); 
+            PageChange(1); 
         }
+        
+        isLoading = false;
+        StateHasChanged();
     }
 
     private void PageChange(int page)
     {
+        currentPage = page;
         var index = page - 1;
         paginatedFilmmakers = filmmakers!
             .Skip(index * range)
