@@ -21,6 +21,6 @@
 
     protected override void OnInitialized()
     {
-        Image = $"https://localhost:7237/{Filmmaker!.image}";       
+        Image = Filmmaker!.Image!.Contains("Image") ? $"https://localhost:7237/{Filmmaker!.Image}" : "images/kojima.png";
     }
 }

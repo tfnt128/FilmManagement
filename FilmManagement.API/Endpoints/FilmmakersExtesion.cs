@@ -40,13 +40,13 @@ namespace FilmManagement.API.Endpoints
                     "wwwroot", "ProfileImages", imageFilmmaker);
 
                 using MemoryStream ms = new MemoryStream(Convert.FromBase64String
-                    (filmmakerRequest.image));
+                    (filmmakerRequest.image!));
                 using FileStream fs = new(path, FileMode.Create);
                 await ms.CopyToAsync(fs);
 
                 var filmmaker = new Filmmaker(filmmakerRequest.Name, filmmakerRequest.Bio)
                 {
-                    PictureProfile = $"/ProfileImage/{imageFilmmaker}"
+                    PictureProfile = $"/ProfileImages/{imageFilmmaker}"
                 };
                 dal.Add(filmmaker);
                 return Results.Ok(filmmaker);
