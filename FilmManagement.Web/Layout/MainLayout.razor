@@ -1,16 +1,19 @@
 ﻿@inherits LayoutComponentBase
+
 <MudThemeProvider IsDarkMode="true" Theme="currentTheme" />
 <MudDialogProvider />
 <MudSnackbarProvider />
+<MudPopoverProvider />  
 
 <MudLayout>
     <MudAppBar Color="Color.Surface" Fixed="true" Elevation="2">
         <MudImage Src="images/kojima.png" Style="width: 122px; height: 65px;" />
-
     </MudAppBar>
+
     <MudDrawer Open="true" ClipMode="DrawerClipMode.Always" Elevation="2">
         <NavMenu></NavMenu>
     </MudDrawer>
+
     <MudMainContent class="main-content pa-100">
         @Body
     </MudMainContent>

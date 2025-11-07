@@ -1,5 +1,49 @@
-﻿<h3>FilmsByFilmmaker</h3>
+﻿@page "/FilmByFilmmaker"
+
+@inject FilmAPI _filmAPI
+<MudStack Class="mt-4 mb-4" Row="true" Justify="Justify.SpaceBetween">
+    <MudText Class="mb-4" Typo="Typo.h4">Registered Films </MudText>
+    <MudPagination Count="@totalPages" SelectedChanged="PageChange"></MudPagination>
+</MudStack>
+@if (paginatedFilms != null)
+{
+    <MudGrid>
+        @foreach (var films in paginatedFilms!)
+        {
+            <MudItem xs="3">
+                <CardFilm Film="films" />
+            </MudItem>
+        }
+    </MudGrid>
+}
+
 
 @code {
+    private ICollection<FilmResponse>? films;
 
+    private int range = 8;
+    private int totalItems;
+    private int totalPages;
+    private ICollection<FilmResponse>? paginatedFilms;
+
+    protected override async Task OnInitializedAsync()
+    {
+        films = await _filmAPI.GetFilmsAsync();
+        if (films != null)
+        {
+            films = films.OrderByDescending(f => f.Id).ToList();
+            totalItems = films.Count();
+            totalPages = (int)Math.Ceiling((double)totalItems / range);
+            this.PageChange(1); 
+        }
+    }
+
+    private void PageChange(int page)
+    {
+        var index = page - 1;
+        paginatedFilms = films!
+            .Skip(index * range)
+            .Take(range)
+            .ToList();
+    }
 }

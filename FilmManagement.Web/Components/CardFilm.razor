@@ -1,0 +1,22 @@
+﻿<MudCard>
+    <MudCardMedia Image="images/kojima.png"></MudCardMedia>
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">@Film!.Name</MudText>
+        </CardHeaderContent>
+    </MudCardHeader>
+    <MudCardContent>
+        <MudText Typo="Typo.body2">Artista/Banda:@Film!.FilmmakerName</MudText>
+    </MudCardContent>
+    <MudCardActions>
+        <MudButton Color="Color.Warning"
+                   Variant="Variant.Outlined"
+                   Href=@($"/EditFilm/{Film!.Name}")>Details</MudButton>
+    </MudCardActions>
+</MudCard>
+
+@code {
+    [Parameter]
+    public FilmResponse? Film { get; set; }
+
+}

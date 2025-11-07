@@ -10,6 +10,8 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 builder.Services.AddMudServices();
 
 builder.Services.AddTransient<FilmmakerAPI>();
+builder.Services.AddTransient<GenreAPI>();
+builder.Services.AddTransient<FilmAPI>();
 
 builder.Services.AddHttpClient("API", client =>
 {

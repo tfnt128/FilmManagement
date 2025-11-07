@@ -1,5 +1,128 @@
-﻿<h3>EditFilm</h3>
+﻿@page "/EditFilm/{FilmName}"
+
+@inject FilmmakerAPI _filmmakerAPI
+@inject GenreAPI _genreAPI
+@inject FilmAPI _filmAPI
+@inject NavigationManager navigationManager
+
+<MudPaper Class="px-8 pt-2 pb-4 mx-12 my-8" Justify="Justify.Center">
+
+    <MudText Class="mt-8" Typo="Typo.h4">Film Edit</MudText>
+
+    <MudForm>
+
+        <MudTextField Class="mt-4"
+                      T="string"
+                      Placeholder="Title"
+                      @bind-Value="name"
+                      Variant="Variant.Outlined"
+                      Required="true"
+                      RequiredError="Required field." />
+
+        <MudSelect Class="mt-4"
+                   T="FilmmakerResponse"
+                   Label="Filmmakers"
+                   Variant="Variant.Filled"
+                   ValueChanged="SelectedFilmmaker"
+                   AnchorOrigin="Origin.BottomCenter">
+            @if (filmmakers is not null)
+            {
+                @foreach (var filmmaker in filmmakers)
+                {
+                    <MudSelectItem Value="@filmmaker">@filmmaker.Name</MudSelectItem>
+                }
+            }
+        </MudSelect>
+
+        <MudNumericField Class="mt-4"
+                         Placeholder="Release Year"
+                         @bind-Value="releaseYear"
+                         Variant="Variant.Outlined"
+                         Lines="1"
+                         Required="true"
+                         RequiredError="Required field." />
+
+        <MudSelect Class="mt-4"
+                   T="GenreResponse"
+                   Label="Genres"
+                   Variant="Variant.Filled"
+                   ValueChanged="SelectedGenre"
+                   AnchorOrigin="Origin.BottomCenter">
+            @if (genres is not null)
+            {
+                @foreach (var genre in genres)
+                {
+                    <MudSelectItem Value="@genre">@genre.Name</MudSelectItem>
+                }
+            }
+            @if (GenreSelected is not null)
+            {
+                foreach (var genre in GenreSelected)
+                {
+                    <MudAlert Severity="Severity.Info">@(genre.Name) Genre added.</MudAlert>
+                }
+            }
+        </MudSelect>
+
+        <div class="d-flex align-center justify-space-between mt-4">
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       @onclick="Delete"
+                       Class="ml-auto">
+                Delete
+            </MudButton>
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Info"
+                       Class="ml-3">
+                Back
+            </MudButton>
+        </div>
+
+    </MudForm>
+
+</MudPaper>
 
 @code {
+    private int? releaseYear;
+    private string? name;
 
+    private ICollection<FilmmakerResponse>? filmmakers;
+    private ICollection<GenreResponse>? genres;
+
+    private List<GenreResponse>? GenreSelected { get; set; } = new();
+    private FilmmakerResponse? FilmmakerFilm { get; set; }
+
+    private FilmResponse? Film { get; set; }
+
+    [Parameter]
+    public string? FilmName { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Film = await _filmAPI.GetFilmByNameAsync(FilmName!);
+        releaseYear = Film!.ReleaseYear;
+        name = Film!.Name;
+        FilmmakerFilm = new FilmmakerResponse(Film.FilmmakerId, Film.FilmmakerName, "", "");
+    }
+
+    private void SelectedFilmmaker(FilmmakerResponse filmmaker)
+    {
+        FilmmakerFilm = filmmaker;
+    }
+
+    private void SelectedGenre(GenreResponse genre)
+    {
+        if (GenreSelected is not null && !GenreSelected.Contains(genre))
+        {
+            GenreSelected.Add(genre);
+        }
+    }
+
+    public async Task Delete()
+    {
+        await _filmAPI.DeleteFilmAsync(Film!.Id);
+        navigationManager.NavigateTo("/FilmByFilmmaker");
+    }
 }
+
+
