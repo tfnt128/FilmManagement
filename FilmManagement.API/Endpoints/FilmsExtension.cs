@@ -95,8 +95,16 @@ namespace FilmManagement.API.Endpoints
 
         private static FilmResponse EntityToResponse(Films film)
         {
-            return new FilmResponse(film.Id, film.Name!, film.Filmmaker!.Id, film.Filmmaker.Name);
+            return new FilmResponse(
+                film.Id,
+                film.Name!,
+                film.Filmmaker!.Id,
+                film.Filmmaker.Name,
+                film.ReleaseYear ?? 0,  
+                film.Genres?.Select(g => g.Name).ToList() ?? new List<string>()
+            );
         }
+        
         private static Genre EntityToRequest(GenreRequest genre)
         {
             return new Genre()

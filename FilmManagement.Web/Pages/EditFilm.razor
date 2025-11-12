@@ -12,6 +12,7 @@
             opacity: 0;
             transform: translateY(40px);
         }
+
         to {
             opacity: 1;
             transform: translateY(0);
@@ -34,15 +35,15 @@
         border-radius: 20px;
     }
 
-    .edit-film-paper::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 4px;
-        background: linear-gradient(90deg, #c82878 0%, #7828c8 100%);
-    }
+        .edit-film-paper::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #c82878 0%, #7828c8 100%);
+        }
 
     .film-edit-header {
         padding: 32px 32px 24px 32px;
@@ -92,9 +93,9 @@
         transition: all 0.3s ease;
     }
 
-    .edit-field:focus-within {
-        transform: scale(1.01);
-    }
+        .edit-field:focus-within {
+            transform: scale(1.01);
+        }
 
     .loading-screen {
         display: flex;
@@ -112,7 +113,7 @@
             <div class="loading-screen">
                 <MudProgressCircular Color="Color.Secondary" Size="Size.Large" Indeterminate="true" />
                 <MudText Typo="Typo.h6" Style="margin-top: 24px; color: rgba(255, 255, 255, 0.7);">
-                    Loading films...
+                    Loading film...
                 </MudText>
             </div>
         </MudPaper>
@@ -126,29 +127,28 @@
                     Edit Film
                 </MudText>
                 <MudText Class="film-edit-subtitle">
-                    Update Film description
+                    Update the film information
                 </MudText>
             </div>
 
             <MudForm @ref="form" Class="film-edit-content">
                 <div class="edit-field">
                     <MudTextField T="string"
-                                Label="Title"
-                                @bind-Value="name"
-                                Variant="Variant.Outlined"
-                                Required="true"
-                                RequiredError="Title is required"
-                                Adornment="Adornment.Start"
-                                AdornmentIcon="@Icons.Material.Filled.Movie" />
+                                  Label="Film Title"
+                                  @bind-Value="name"
+                                  Variant="Variant.Outlined"
+                                  Required="true"
+                                  RequiredError="Title is required"
+                                  Adornment="Adornment.Start"
+                                  AdornmentIcon="@Icons.Material.Filled.Movie" />
                 </div>
 
                 <div class="edit-field">
                     <MudSelect T="FilmmakerResponse"
-                              Label="Filmmaker"
-                              Variant="Variant.Outlined"
-                              @bind-Value="FilmmakerFilm"
-                              ValueChanged="SelectedFilmmaker"
-                              AnchorOrigin="Origin.BottomCenter">
+                               Label="Filmmaker"
+                               Variant="Variant.Outlined"
+                               @bind-Value="FilmmakerFilm"
+                               AnchorOrigin="Origin.BottomCenter">
                         @if (filmmakers is not null)
                         {
                             @foreach (var filmmaker in filmmakers)
@@ -163,28 +163,28 @@
 
                 <div class="edit-field">
                     <MudNumericField T="int?"
-                                    Label="Release Year"
-                                    @bind-Value="releaseYear"
-                                    Variant="Variant.Outlined"
-                                    Required="true"
-                                    RequiredError="Year is required"
-                                    Adornment="Adornment.Start"
-                                    AdornmentIcon="@Icons.Material.Filled.CalendarToday"
-                                    Min="1800"
-                                    Max="2100" />
+                                     Label="Release Year"
+                                     @bind-Value="releaseYear"
+                                     Variant="Variant.Outlined"
+                                     Required="true"
+                                     RequiredError="Year is required"
+                                     Adornment="Adornment.Start"
+                                     AdornmentIcon="@Icons.Material.Filled.CalendarToday"
+                                     Min="1800"
+                                     Max="2100" />
                 </div>
 
                 <div class="edit-field">
                     <MudSelect T="GenreResponse"
-                              Label="Add Genre"
-                              Variant="Variant.Outlined"
-                              ValueChanged="SelectedGenre"
-                              AnchorOrigin="Origin.BottomCenter">
+                               Label="Add Genre"
+                               Variant="Variant.Outlined"
+                               AnchorOrigin="Origin.BottomCenter">
                         @if (genres is not null)
                         {
                             @foreach (var genre in genres)
                             {
-                                <MudSelectItem Value="@genre">
+                                <MudSelectItem Value="@genre"
+                                               @onclick="@(() => SelectedGenre(genre))">
                                     @genre.Name
                                 </MudSelectItem>
                             }
@@ -195,14 +195,14 @@
                     {
                         <div class="genre-chips-area">
                             <MudText Typo="Typo.caption" Style="width: 100%; color: rgba(255, 255, 255, 0.5); margin-bottom: 8px;">
-                                Selected Genres:
+                                Selected genres:
                             </MudText>
                             @foreach (var genre in GenreSelected)
                             {
-                                <MudChip Color="Color.Secondary"
-                                        Size="Size.Medium"
-                                        Icon="@Icons.Material.Filled.LocalMovies"
-                                        OnClose="@(() => RemoveGenre(genre))">
+                                <MudChip T="string"
+                                         Color="Color.Secondary"
+                                         Size="Size.Medium"
+                                         OnClose="@(() => RemoveGenre(genre))">
                                     @genre.Name
                                 </MudChip>
                             }
@@ -213,27 +213,27 @@
 
             <div class="film-edit-buttons">
                 <MudButton Variant="Variant.Filled"
-                          Color="Color.Error"
-                          StartIcon="@Icons.Material.Filled.Delete"
-                          OnClick="ConfirmDelete"
-                          Size="Size.Large">
+                           Color="Color.Error"
+                           StartIcon="@Icons.Material.Filled.Delete"
+                           OnClick="ConfirmDelete"
+                           Size="Size.Large">
                     Delete Film
                 </MudButton>
 
                 <div style="display: flex; gap: 16px;">
                     <MudButton Variant="Variant.Outlined"
-                              Color="Color.Default"
-                              StartIcon="@Icons.Material.Filled.ArrowBack"
-                              OnClick="@(() => navigationManager.NavigateTo("/FilmByFilmmaker"))"
-                              Size="Size.Large">
+                               Color="Color.Default"
+                               StartIcon="@Icons.Material.Filled.ArrowBack"
+                               OnClick="@(() => navigationManager.NavigateTo("/FilmByFilmmaker"))"
+                               Size="Size.Large">
                         Cancel
                     </MudButton>
                     <MudButton Variant="Variant.Filled"
-                              Color="Color.Secondary"
-                              StartIcon="@Icons.Material.Filled.Save"
-                              OnClick="SaveChanges"
-                              Disabled="@isSubmitting"
-                              Size="Size.Large">
+                               Color="Color.Secondary"
+                               StartIcon="@Icons.Material.Filled.Save"
+                               OnClick="SaveChanges"
+                               Disabled="@isSubmitting"
+                               Size="Size.Large">
                         @if (isSubmitting)
                         {
                             <MudProgressCircular Size="Size.Small" Indeterminate="true" Style="margin-right: 8px;" />
@@ -241,7 +241,7 @@
                         }
                         else
                         {
-                            <span>Save</span>
+                            <span>Save Changes</span>
                         }
                     </MudButton>
                 </div>
@@ -277,7 +277,7 @@
 
         filmmakers = await _filmmakerAPI.GetFilmmakersAsync();
         genres = await _genreAPI.GetGenresAsync();
-        
+
         Film = await _filmAPI.GetFilmByNameAsync(FilmName!);
         releaseYear = Film!.ReleaseYear;
         name = Film!.Name;
@@ -290,6 +290,7 @@
     {
         FilmmakerFilm = filmmaker;
     }
+
 
     private void SelectedGenre(GenreResponse genre)
     {
@@ -318,13 +319,13 @@
         isSubmitting = true;
         try
         {
-            Snackbar.Add("Movie successfully updated!", Severity.Success);
+            Snackbar.Add("Film updated successfully!", Severity.Success);
             await Task.Delay(500);
             navigationManager.NavigateTo("/FilmByFilmmaker");
         }
         catch (Exception ex)
         {
-            Snackbar.Add($"Error updating movie: {ex.Message}", Severity.Error);
+            Snackbar.Add($"Error updating film: {ex.Message}", Severity.Error);
         }
         finally
         {
@@ -336,7 +337,7 @@
     {
         bool? result = await DialogService.ShowMessageBox(
             "Confirm Deletion",
-            $"Are you sure you want to delete the movie '{name}'? This action cannot be undone.",
+            $"Are you sure you want to delete the film '{name}'? This action cannot be undone.",
             yesText: "Delete", cancelText: "Cancel",
             options: new DialogOptions { MaxWidth = MaxWidth.Small });
 
@@ -351,14 +352,13 @@
         try
         {
             await _filmAPI.DeleteFilmAsync(Film!.Id);
-            Snackbar.Add("Movie successfully deleted!", Severity.Success);
+            Snackbar.Add("Film deleted successfully!", Severity.Success);
             await Task.Delay(500);
             navigationManager.NavigateTo("/FilmByFilmmaker");
         }
         catch (Exception ex)
         {
-            Snackbar.Add($"Error deleting movie: {ex.Message}", Severity.Error);
+            Snackbar.Add($"Error deleting film: {ex.Message}", Severity.Error);
         }
     }
-
 }

@@ -25,9 +25,9 @@
     }
 
     .film-form-paper {
-        background: linear-gradient(135deg, rgba(30, 30, 30, 0.95) 0%, rgba(20, 20, 20, 0.98) 100%) !important;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        background: linear-gradient(135deg, rgba(30,30,30,0.95) 0%, rgba(20,20,20,0.98) 100%) !important;
+        border: 1px solid rgba(255,255,255,0.1);
+        box-shadow: 0 20px 60px rgba(0,0,0,0.5);
         backdrop-filter: blur(10px);
         position: relative;
         overflow: hidden;
@@ -46,7 +46,7 @@
 
     .film-header {
         padding: 32px 32px 24px 32px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        border-bottom: 1px solid rgba(255,255,255,0.05);
     }
 
     .film-title {
@@ -59,7 +59,7 @@
     }
 
     .film-subtitle {
-        color: rgba(255, 255, 255, 0.6);
+        color: rgba(255,255,255,0.6);
         font-size: 0.95rem;
     }
 
@@ -67,31 +67,44 @@
         padding: 32px;
     }
 
-    .genre-chip-container {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        margin-top: 12px;
-        padding: 16px;
+    .upload-area {
+        border: 2px dashed rgba(120, 40, 200, 0.3);
+        border-radius: 16px;
+        padding: 32px;
+        text-align: center;
+        transition: all 0.3s ease;
         background: rgba(120, 40, 200, 0.05);
-        border-radius: 12px;
-        border: 1px solid rgba(120, 40, 200, 0.2);
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
     }
 
-    .genre-chip {
-        animation: scaleIn 0.3s ease-out;
+        .upload-area:hover {
+            border-color: rgba(120, 40, 200, 0.6);
+            background: rgba(120, 40, 200, 0.1);
+            transform: scale(1.02);
+        }
+
+    .image-preview {
+        border-radius: 16px;
+        overflow: hidden;
+        border: 3px solid rgba(120,40,200,0.3);
+        box-shadow: 0 8px 32px rgba(120,40,200,0.3);
+        transition: all 0.3s ease;
+        background: rgba(0,0,0,0.3);
     }
 
-    @@keyframes scaleIn {
-        from {
-            opacity: 0;
-            transform: scale(0.8);
+        .image-preview:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 48px rgba(120,40,200,0.5);
         }
 
-        to {
-            opacity: 1;
-            transform: scale(1);
-        }
+    .upload-icon {
+        font-size: 80px;
+        background: linear-gradient(135deg, #7828c8 0%, #c82878 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 16px;
     }
 
     .film-buttons {
@@ -99,8 +112,8 @@
         gap: 16px;
         justify-content: flex-end;
         padding: 24px 32px;
-        border-top: 1px solid rgba(255, 255, 255, 0.05);
-        background: rgba(0, 0, 0, 0.2);
+        border-top: 1px solid rgba(255,255,255,0.05);
+        background: rgba(0,0,0,0.2);
     }
 
     .input-section {
@@ -108,14 +121,10 @@
         transition: all 0.3s ease;
     }
 
-        .input-section:focus-within {
-            transform: scale(1.01);
-        }
-
     .section-label {
         font-size: 0.875rem;
         font-weight: 600;
-        color: rgba(255, 255, 255, 0.7);
+        color: rgba(255,255,255,0.7);
         margin-bottom: 12px;
         display: flex;
         align-items: center;
@@ -128,22 +137,22 @@
         <div class="film-header">
             <MudText Class="film-title">
                 <MudIcon Icon="@Icons.Material.Filled.MovieCreation" Style="margin-right: 12px; vertical-align: middle;" />
-                Movie Registration
+                Film Registration
             </MudText>
             <MudText Class="film-subtitle">
-                Add a new movie to your library
+                Add a new film to your library
             </MudText>
         </div>
 
         <MudForm @ref="form" Class="film-content">
             <div class="input-section">
                 <MudTextField T="string"
-                              Label="Movie Title"
+                              Label="Film Title"
                               @bind-Value="name"
                               Variant="Variant.Outlined"
                               Required="true"
                               RequiredError="The title is required"
-                              HelperText="Enter the full movie title"
+                              HelperText="Enter the full title of the film"
                               Adornment="Adornment.Start"
                               AdornmentIcon="@Icons.Material.Filled.Movie" />
             </div>
@@ -154,18 +163,14 @@
                     <span>Filmmaker</span>
                 </div>
                 <MudSelect T="FilmmakerResponse"
-                           Label="Select a Filmmaker"
+                           Label="Select Filmmaker"
                            Variant="Variant.Outlined"
-                           ValueChanged="SelectedFilmmaker"
-                           AnchorOrigin="Origin.BottomCenter"
-                           Dense="false">
+                           ValueChanged="SelectedFilmmaker">
                     @if (filmmakers is not null)
                     {
                         @foreach (var filmmaker in filmmakers)
                         {
-                            <MudSelectItem Value="@filmmaker">
-                                @filmmaker.Name
-                            </MudSelectItem>
+                            <MudSelectItem Value="@filmmaker">@filmmaker.Name</MudSelectItem>
                         }
                     }
                 </MudSelect>
@@ -177,7 +182,7 @@
                                  @bind-Value="releaseYear"
                                  Variant="Variant.Outlined"
                                  Required="true"
-                                 RequiredError="The year is required"
+                                 RequiredError="The release year is required"
                                  HelperText="Ex: 2024"
                                  Adornment="Adornment.Start"
                                  AdornmentIcon="@Icons.Material.Filled.CalendarToday"
@@ -188,36 +193,26 @@
             <div class="input-section">
                 <div class="section-label">
                     <MudIcon Icon="@Icons.Material.Filled.Category" Size="Size.Small" />
-                    <span>Movie Genres</span>
+                    <span>Film Genres</span>
                 </div>
                 <MudSelect T="GenreResponse"
-                           Label="Add Genre"
-                           Variant="Variant.Outlined"
-                           ValueChanged="SelectedGenre"
-                           AnchorOrigin="Origin.BottomCenter">
-                    @if (genres is not null)
+                           Value="selectedGenreTemp"
+                           ValueChanged="@((GenreResponse value) => SelectedGenre(value))">
+                    @foreach (var genre in genres)
                     {
-                        @foreach (var genre in genres)
-                        {
-                            <MudSelectItem Value="@genre">
-                                @genre.Name
-                            </MudSelectItem>
-                        }
+                        <MudSelectItem Value="@genre">@genre.Name</MudSelectItem>
                     }
                 </MudSelect>
 
                 @if (GenreSelected is not null && GenreSelected.Any())
                 {
                     <div class="genre-chip-container">
-                        <MudText Typo="Typo.caption" Style="width: 100%; color: rgba(255, 255, 255, 0.5); margin-bottom: 8px;">
+                        <MudText Typo="Typo.caption" Style="width: 100%; color: rgba(255,255,255,0.5); margin-bottom: 8px;">
                             Selected genres:
                         </MudText>
                         @foreach (var genre in GenreSelected)
                         {
-                            <MudChip Class="genre-chip"
-                                     Color="Color.Primary"
-                                     Size="Size.Medium"
-                                     Icon="@Icons.Material.Filled.LocalMovies"
+                            <MudChip T="string" Color="Color.Primary" Size="Size.Medium"
                                      OnClose="@(() => RemoveGenre(genre))">
                                 @genre.Name
                             </MudChip>
@@ -225,6 +220,19 @@
                     </div>
                 }
             </div>
+
+            @if (!string.IsNullOrEmpty(fileImage))
+            {
+                <MudText Typo="Typo.subtitle2" Style="margin-bottom: 12px; color: rgba(255,255,255,0.7);">
+                    <MudIcon Icon="@Icons.Material.Filled.Image" Size="Size.Small" Style="margin-right: 8px;" />
+                    Poster Preview
+                </MudText>
+                <div style="display: flex; justify-content: center; margin-bottom: 24px;">
+                    <MudImage Src="@fileImage" Class="image-preview" Width="300" Height="300" ObjectFit="ObjectFit.Cover" />
+                </div>
+            }
+
+            
         </MudForm>
 
         <div class="film-buttons">
@@ -248,7 +256,7 @@
                 }
                 else
                 {
-                    <span>Register Movie</span>
+                    <span>Register Film</span>
                 }
             </MudButton>
         </div>
@@ -261,9 +269,11 @@
     private string? name;
     private ICollection<FilmmakerResponse>? filmmakers;
     private ICollection<GenreResponse>? genres;
-    private List<GenreResponse>? GenreSelected { get; set; } = new();
-    private FilmmakerResponse? FilmmakerFilm { get; set; }
+    private List<GenreResponse> GenreSelected { get; set; } = new();
+    private FilmmakerResponse? FilmmakerFilm;
     private bool isSubmitting = false;
+
+    private string? fileImage;
 
     protected override async Task OnInitializedAsync()
     {
@@ -271,27 +281,44 @@
         genres = await _genreAPI.GetGenresAsync();
     }
 
-    private void SelectedFilmmaker(FilmmakerResponse filmmaker)
-    {
-        FilmmakerFilm = filmmaker;
-    }
+    private void SelectedFilmmaker(FilmmakerResponse filmmaker) => FilmmakerFilm = filmmaker;
+
+    private GenreResponse? selectedGenreTemp;
 
     private void SelectedGenre(GenreResponse genre)
     {
-        if (GenreSelected is not null && !GenreSelected.Contains(genre))
+        if (genre is not null && !GenreSelected.Contains(genre))
         {
             GenreSelected.Add(genre);
             Snackbar.Add($"Genre '{genre.Name}' added!", Severity.Success);
+            selectedGenreTemp = null;
         }
     }
 
     private void RemoveGenre(GenreResponse genre)
     {
-        GenreSelected?.Remove(genre);
+        GenreSelected.Remove(genre);
         Snackbar.Add($"Genre '{genre.Name}' removed", Severity.Info);
     }
 
-    private List<GenreRequest> GenresRequest { get; set; } = new();
+    private async Task UploadFile(IBrowserFile file)
+    {
+        try
+        {
+            long maxFileSize = 1024 * 1024 * 15;
+            var format = file.ContentType;
+            using var fileStream = file.OpenReadStream(maxFileSize);
+            using var memoryStream = new MemoryStream();
+            await fileStream.CopyToAsync(memoryStream);
+            var base64 = Convert.ToBase64String(memoryStream.ToArray());
+            fileImage = $"data:{format};base64,{base64}";
+            Snackbar.Add("Image uploaded successfully!", Severity.Success);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error uploading image: {ex.Message}", Severity.Error);
+        }
+    }
 
     public async Task Register()
     {
@@ -314,24 +341,21 @@
             return;
         }
 
+
         isSubmitting = true;
         try
         {
-            GenresRequest.Clear();
-            foreach (var genre in GenreSelected)
-            {
-                GenresRequest.Add(new GenreRequest(genre.Name, genre.Description));
-            }
+            var genreRequests = GenreSelected.Select(g => new GenreRequest(g.Name, g.Description)).ToList();
+            var filmRequest = new FilmRequest(name!, FilmmakerFilm.Id, releaseYear, genreRequests);
 
-            var filmRequest = new FilmRequest(name!, FilmmakerFilm!.Id, releaseYear, GenresRequest);
             await _filmAPI.AddFilmAsync(filmRequest);
-            Snackbar.Add("Movie successfully registered!", Severity.Success);
+            Snackbar.Add("Film registered successfully!", Severity.Success);
             await Task.Delay(500);
             navigationManager.NavigateTo("/FilmByFilmmaker");
         }
         catch (Exception ex)
         {
-            Snackbar.Add($"Error registering movie: {ex.Message}", Severity.Error);
+            Snackbar.Add($"Error registering film: {ex.Message}", Severity.Error);
         }
         finally
         {

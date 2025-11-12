@@ -1,22 +1,151 @@
-﻿<MudCard>
-    <MudCardMedia Image="images/kojima.png"></MudCardMedia>
-    <MudCardHeader>
-        <CardHeaderContent>
-            <MudText Typo="Typo.h6">@Film!.Name</MudText>
-        </CardHeaderContent>
-    </MudCardHeader>
+﻿<style>
+    .film-card-container {
+        height: 100%;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+        border-radius: 16px;
+    }
+
+        .film-card-container:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 60px rgba(200, 40, 120, 0.4);
+        }
+
+        .film-card-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(200, 40, 120, 0.1) 0%, rgba(120, 40, 200, 0.1) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .film-card-container:hover::before {
+            opacity: 1;
+        }
+
+    .film-header-gradient {
+        height: 180px;
+        background: linear-gradient(135deg, rgba(200, 40, 120, 0.3) 0%, rgba(120, 40, 200, 0.3) 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+    }
+
+    .film-icon-large {
+        font-size: 80px;
+        opacity: 0.5;
+    }
+
+    .film-year-badge {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(10px);
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 0.875rem;
+        z-index: 2;
+    }
+
+    .film-genres-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 8px;
+    }
+
+    .genre-badge {
+        background: linear-gradient(135deg, rgba(200, 40, 120, 0.2) 0%, rgba(120, 40, 200, 0.2) 100%);
+        border: 1px solid rgba(200, 40, 120, 0.3);
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .film-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-bottom: 4px;
+        background: linear-gradient(90deg, #ffffff 0%, #e0e0e0 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .filmmaker-name {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.95rem;
+    }
+
+    .details-button {
+        transition: all 0.3s ease;
+    }
+
+        .details-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(200, 40, 120, 0.4);
+        }
+</style>
+
+<MudCard Class="film-card-container" Elevation="4">
+    <div style="position: relative;">
+        <div class="film-header-gradient">
+            <MudIcon Icon="@Icons.Material.Filled.Movie" Class="film-icon-large" />
+        </div>
+        @if (Film!.ReleaseYear > 0)
+        {
+            <div class="film-year-badge">
+                <MudIcon Icon="@Icons.Material.Filled.CalendarToday" Size="Size.Small" Style="vertical-align: middle; margin-right: 4px;" />
+                @Film.ReleaseYear
+            </div>
+        }
+    </div>
+
     <MudCardContent>
-        <MudText Typo="Typo.body2">Artista/Banda:@Film!.FilmmakerName</MudText>
+        <MudText Class="film-title">@Film!.Name</MudText>
+        <MudText Class="filmmaker-name">
+            <MudIcon Icon="@Icons.Material.Filled.Person" Size="Size.Small" Style="vertical-align: middle; margin-right: 4px; opacity: 0.7;" />
+            @Film!.FilmmakerName
+        </MudText>
+
+        @if (Film.Genres != null && Film.Genres.Any())
+        {
+            <div class="film-genres-container">
+                @foreach (var genre in Film.Genres.Take(3))
+                {
+                    <span class="genre-badge">@genre</span>
+                }
+                @if (Film.Genres.Count() > 3)
+                {
+                    <span class="genre-badge">+@(Film.Genres.Count() - 3)</span>
+                }
+            </div>
+        }
     </MudCardContent>
+
     <MudCardActions>
-        <MudButton Color="Color.Warning"
-                   Variant="Variant.Outlined"
-                   Href=@($"/EditFilm/{Film!.Name}")>Details</MudButton>
+        <MudButton Color="Color.Secondary"
+                   Variant="Variant.Filled"
+                   Href=@($"/EditFilm/{Film!.Name}")
+                   StartIcon="@Icons.Material.Filled.Visibility"
+                   Class="details-button"
+                   FullWidth="true">
+            View Details
+        </MudButton>
     </MudCardActions>
 </MudCard>
 
 @code {
     [Parameter]
     public FilmResponse? Film { get; set; }
-
 }

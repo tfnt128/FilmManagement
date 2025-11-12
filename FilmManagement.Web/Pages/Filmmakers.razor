@@ -7,6 +7,7 @@
             opacity: 0;
             transform: translateY(30px);
         }
+
         to {
             opacity: 1;
             transform: translateY(0);
@@ -18,6 +19,7 @@
             opacity: 0;
             transform: scale(0.9);
         }
+
         to {
             opacity: 1;
             transform: scale(1);
@@ -36,20 +38,25 @@
         overflow: hidden;
     }
 
-    .page-header::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        right: -50%;
-        width: 200%;
-        height: 200%;
-        background: radial-gradient(circle, rgba(120, 40, 200, 0.1) 0%, transparent 70%);
-        animation: rotate 20s linear infinite;
-    }
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(120, 40, 200, 0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
 
     @@keyframes rotate {
-        from { transform: rotate(0deg); }
-        to { transform: rotate(360deg); }
+        from {
+            transform: rotate(0deg);
+        }
+
+        to {
+            transform: rotate(360deg);
+        }
     }
 
     .page-title {
@@ -87,11 +94,11 @@
         transition: all 0.3s ease;
     }
 
-    .stat-card:hover {
-        background: rgba(255, 255, 255, 0.05);
-        transform: translateY(-4px);
-        box-shadow: 0 8px 24px rgba(120, 40, 200, 0.2);
-    }
+        .stat-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(120, 40, 200, 0.2);
+        }
 
     .stat-number {
         font-size: 2rem;
@@ -112,9 +119,9 @@
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    .filmmaker-card:hover {
-        transform: translateY(-8px) scale(1.02);
-    }
+        .filmmaker-card:hover {
+            transform: translateY(-8px) scale(1.02);
+        }
 
     .pagination-container {
         animation: fadeInUp 0.6s ease-out 0.2s backwards;
@@ -154,8 +161,8 @@
 
 <div class="page-header">
     <MudText Class="page-title">Filmmakers</MudText>
-    <MudText Class="page-subtitle">Explore and manage the registered filmmakers</MudText>
-    
+    <MudText Class="page-subtitle">Explore and manage registered filmmakers</MudText>
+
     @if (filmmakers != null)
     {
         <div class="stats-container">
@@ -169,7 +176,7 @@
             </div>
             <div class="stat-card">
                 <div class="stat-number">@range</div>
-                <div class="stat-label">By Page</div>
+                <div class="stat-label">Per Page</div>
             </div>
         </div>
     }
@@ -187,24 +194,29 @@
 else if (paginatedFilmmakers != null && paginatedFilmmakers.Any())
 {
     <MudGrid Spacing="4">
+        @{
+            var index = 0;
+        }
         @foreach (var filmmaker in paginatedFilmmakers)
         {
-            <MudItem xs="12" sm="6" md="4" lg="3" 
-                     Class="filmmaker-card" 
-                     Style="animation-delay: @(paginatedFilmmakers.ToList().IndexOf(filmmaker) * 0.05)s">
+            var delay = index * 0.05;
+            <MudItem xs="12" sm="6" md="4" lg="3"
+                     Class="filmmaker-card"
+                     Style="@($"animation-delay: {delay}s")">
                 <CardFilmmaker Filmmaker="filmmaker" />
             </MudItem>
+            index++;
         }
     </MudGrid>
 
     <div class="pagination-container">
-        <MudPagination Count="@totalPages" 
-                      Selected="@currentPage"
-                      SelectedChanged="PageChange"
-                      Color="Color.Primary"
-                      Variant="Variant.Filled"
-                      ShowFirstButton="true"
-                      ShowLastButton="true" />
+        <MudPagination Count="@totalPages"
+                       Selected="@currentPage"
+                       SelectedChanged="PageChange"
+                       Color="Color.Primary"
+                       Variant="Variant.Filled"
+                       ShowFirstButton="true"
+                       ShowLastButton="true" />
     </div>
 }
 else
@@ -212,13 +224,13 @@ else
     <div class="empty-state">
         <MudIcon Icon="@Icons.Material.Filled.PersonOff" Class="empty-state-icon" />
         <MudText Typo="Typo.h4" Style="margin-bottom: 16px; color: rgba(255, 255, 255, 0.7);">
-            filmmaker not found
+            No filmmakers found
         </MudText>
         <MudText Typo="Typo.body1" Style="color: rgba(255, 255, 255, 0.5); margin-bottom: 32px;">
-            Get started by creating your first filmmaker
+            Start by registering your first filmmaker
         </MudText>
-        <MudButton Variant="Variant.Filled" 
-                   Color="Color.Primary" 
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
                    StartIcon="@Icons.Material.Filled.PersonAdd"
                    Href="/RegisterFilmmaker"
                    Size="Size.Large">
@@ -245,18 +257,18 @@ else
     {
         isLoading = true;
         StateHasChanged();
-        
+
         await Task.Delay(300);
-        
+
         filmmakers = await filmmakerAPI.GetFilmmakersAsync();
         if (filmmakers != null)
         {
             filmmakers = filmmakers.OrderByDescending(f => f.Id).ToList();
             totalItems = filmmakers.Count();
             totalPages = (int)Math.Ceiling((double)totalItems / range);
-            PageChange(1); 
+            PageChange(1);
         }
-        
+
         isLoading = false;
         StateHasChanged();
     }

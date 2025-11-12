@@ -9,6 +9,7 @@
             opacity: 0;
             transform: translateY(40px);
         }
+
         to {
             opacity: 1;
             transform: translateY(0);
@@ -30,15 +31,15 @@
         overflow: hidden;
     }
 
-    .form-paper::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 4px;
-        background: linear-gradient(90deg, #7828c8 0%, #c82878 100%);
-    }
+        .form-paper::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #7828c8 0%, #c82878 100%);
+        }
 
     .form-header {
         padding: 32px 32px 24px 32px;
@@ -75,29 +76,29 @@
         overflow: hidden;
     }
 
-    .upload-area:hover {
-        border-color: rgba(120, 40, 200, 0.6);
-        background: rgba(120, 40, 200, 0.1);
-        transform: scale(1.02);
-    }
+        .upload-area:hover {
+            border-color: rgba(120, 40, 200, 0.6);
+            background: rgba(120, 40, 200, 0.1);
+            transform: scale(1.02);
+        }
 
-    .upload-area::before {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 0;
-        height: 0;
-        border-radius: 50%;
-        background: rgba(120, 40, 200, 0.2);
-        transform: translate(-50%, -50%);
-        transition: width 0.6s, height 0.6s;
-    }
+        .upload-area::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(120, 40, 200, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
 
-    .upload-area:hover::before {
-        width: 300px;
-        height: 300px;
-    }
+        .upload-area:hover::before {
+            width: 300px;
+            height: 300px;
+        }
 
     .image-preview {
         border-radius: 16px;
@@ -108,10 +109,10 @@
         background: rgba(0, 0, 0, 0.3);
     }
 
-    .image-preview:hover {
-        transform: scale(1.05);
-        box-shadow: 0 12px 48px rgba(120, 40, 200, 0.5);
-    }
+        .image-preview:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 48px rgba(120, 40, 200, 0.5);
+        }
 
     .upload-icon {
         font-size: 80px;
@@ -134,19 +135,19 @@
         transition: all 0.3s ease;
     }
 
-    .mud-button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 24px rgba(120, 40, 200, 0.4);
-    }
+        .mud-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(120, 40, 200, 0.4);
+        }
 
     .form-field {
         margin-bottom: 24px;
         transition: all 0.3s ease;
     }
 
-    .form-field:focus-within {
-        transform: scale(1.01);
-    }
+        .form-field:focus-within {
+            transform: scale(1.01);
+        }
 </style>
 
 <div class="register-container">
@@ -154,7 +155,7 @@
         <div class="form-header">
             <MudText Class="form-title">
                 <MudIcon Icon="@Icons.Material.Filled.PersonAdd" Style="margin-right: 12px; vertical-align: middle;" />
-                Filmmaker Registration
+                Register Filmmaker
             </MudText>
             <MudText Class="form-subtitle">
                 Add a new filmmaker to your collection
@@ -163,28 +164,28 @@
 
         <MudForm @ref="form" Class="form-content">
             <div class="form-field">
-                <MudTextField T="string" 
-                            Label="Filmmaker Name"
-                            @bind-Value="name"
-                            Variant="Variant.Outlined"
-                            Required="true"
-                            RequiredError="Name is required"
-                            HelperText="Enter the filmmaker's full name"
-                            Adornment="Adornment.Start"
-                            AdornmentIcon="@Icons.Material.Filled.Person" />
+                <MudTextField T="string"
+                              Label="Filmmaker Name"
+                              @bind-Value="name"
+                              Variant="Variant.Outlined"
+                              Required="true"
+                              RequiredError="Name is required"
+                              HelperText="Enter the filmmaker’s full name"
+                              Adornment="Adornment.Start"
+                              AdornmentIcon="@Icons.Material.Filled.Person" />
             </div>
 
             <div class="form-field">
-                <MudTextField T="string" 
-                            Label="Biography"
-                            @bind-Value="bio"
-                            Variant="Variant.Outlined"
-                            Lines="6"
-                            Required="true"
-                            RequiredError="Biography is required"
-                            HelperText="Tell us about the filmmaker's career and works"
-                            Adornment="Adornment.Start"
-                            AdornmentIcon="@Icons.Material.Filled.Description" />
+                <MudTextField T="string"
+                              Label="Biography"
+                              @bind-Value="bio"
+                              Variant="Variant.Outlined"
+                              Lines="6"
+                              Required="true"
+                              RequiredError="Biography is required"
+                              HelperText="Tell us about the filmmaker’s career and works"
+                              Adornment="Adornment.Start"
+                              AdornmentIcon="@Icons.Material.Filled.Description" />
             </div>
 
             @if (!string.IsNullOrEmpty(fileImage))
@@ -194,17 +195,17 @@
                     Image Preview
                 </MudText>
                 <div style="display: flex; justify-content: center; margin-bottom: 24px;">
-                    <MudImage Src="@fileImage" 
-                            Class="image-preview"
-                            Width="300"
-                            Height="300"
-                            ObjectFit="ObjectFit.Cover" />
+                    <MudImage Src="@fileImage"
+                              Class="image-preview"
+                              Width="300"
+                              Height="300"
+                              ObjectFit="ObjectFit.Cover" />
                 </div>
             }
 
             <MudFileUpload T="IBrowserFile"
-                        Accept=".png, .jpg, .jpeg"
-                        FilesChanged="UploadFile">
+                           Accept=".png, .jpg, .jpeg"
+                           FilesChanged="UploadFile">
                 <ActivatorContent>
                     <div class="upload-area">
                         <MudIcon Icon="@Icons.Material.Filled.CloudUpload" Class="upload-icon" />
@@ -212,9 +213,9 @@
                             Upload Photo
                         </MudText>
                         <MudText Typo="Typo.body2" Style="color: rgba(255, 255, 255, 0.6); margin-bottom: 16px;">
-                            Drag an image or click to select
+                            Drag an image here or click to select
                         </MudText>
-                        <MudChip Color="Color.Primary" Size="Size.Small">
+                        <MudChip T="string" Color="Color.Primary" Size="Size.Small">
                             PNG, JPG or JPEG
                         </MudChip>
                     </div>
@@ -224,18 +225,18 @@
 
         <div class="action-buttons">
             <MudButton Variant="Variant.Outlined"
-                    Color="Color.Default"
-                    StartIcon="@Icons.Material.Filled.ArrowBack"
-                    OnClick="@(() => navigationManager.NavigateTo("/Filmmakers"))"
-                    Size="Size.Large">
+                       Color="Color.Default"
+                       StartIcon="@Icons.Material.Filled.ArrowBack"
+                       OnClick="@(() => navigationManager.NavigateTo("/Filmmakers"))"
+                       Size="Size.Large">
                 Cancel
             </MudButton>
             <MudButton Variant="Variant.Filled"
-                    Color="Color.Primary"
-                    StartIcon="@Icons.Material.Filled.Save"
-                    OnClick="Register"
-                    Disabled="@isSubmitting"
-                    Size="Size.Large">
+                       Color="Color.Primary"
+                       StartIcon="@Icons.Material.Filled.Save"
+                       OnClick="Register"
+                       Disabled="@isSubmitting"
+                       Size="Size.Large">
                 @if (isSubmitting)
                 {
                     <MudProgressCircular Size="Size.Small" Indeterminate="true" Style="margin-right: 8px;" />
@@ -263,7 +264,7 @@
         await form.Validate();
         if (!form.IsValid)
         {
-            Snackbar.Add("Please fill in all required fields", Severity.Warning);
+            Snackbar.Add("Please fill out all required fields", Severity.Warning);
             return;
         }
 
@@ -278,7 +279,7 @@
         {
             var request = new FilmmakerRequest(name!, bio!, imageProfile!);
             await filmmakerAPI.AddFilmmakerAsync(request);
-            Snackbar.Add("Filmmaker successfully registered!", Severity.Success);
+            Snackbar.Add("Filmmaker registered successfully!", Severity.Success);
             await Task.Delay(500);
             navigationManager.NavigateTo("/Filmmakers");
         }
@@ -304,7 +305,7 @@
             var imageUpload = Convert.ToBase64String(memoryStream.ToArray());
             fileImage = $"data:{format};base64,{imageUpload}";
             imageProfile = imageUpload;
-            Snackbar.Add("Image successfully uploaded!", Severity.Success);
+            Snackbar.Add("Image uploaded successfully!", Severity.Success);
         }
         catch (Exception ex)
         {

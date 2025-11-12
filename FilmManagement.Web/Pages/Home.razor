@@ -1,7 +1,370 @@
 ﻿@page "/"
+<PageTitle>Film Manager - Home</PageTitle>
 
-<PageTitle>Home</PageTitle>
+<style>
+    @@keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(40px);
+        }
 
-<h1>Hello, world!</h1>
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
 
-Welcome to your new app.
+    @@keyframes float {
+        0%, 100% {
+            transform: translateY(0px);
+        }
+
+        50% {
+            transform: translateY(-20px);
+        }
+    }
+
+    @@keyframes glow {
+        0%, 100% {
+            box-shadow: 0 0 20px rgba(120, 40, 200, 0.3);
+        }
+
+        50% {
+            box-shadow: 0 0 40px rgba(120, 40, 200, 0.6);
+        }
+    }
+
+    @@keyframes slideInLeft {
+        from {
+            opacity: 0;
+            transform: translateX(-50px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    .hero-section {
+        position: relative;
+        padding: 80px 0;
+        overflow: hidden;
+        animation: fadeInUp 1s ease-out;
+    }
+
+    .hero-background {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(circle at 20% 30%, rgba(120, 40, 200, 0.15) 0%, transparent 50%), radial-gradient(circle at 80% 70%, rgba(200, 40, 120, 0.15) 0%, transparent 50%);
+        z-index: 0;
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 1;
+        text-align: center;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .hero-icon {
+        font-size: 120px;
+        background: linear-gradient(135deg, #7828c8 0%, #c82878 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: float 3s ease-in-out infinite;
+        margin-bottom: 24px;
+    }
+
+    .hero-title {
+        font-size: 4rem;
+        font-weight: 900;
+        background: linear-gradient(90deg, #ffffff 0%, #e0e0e0 50%, #ffffff 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 16px;
+        line-height: 1.2;
+        animation: fadeInUp 1s ease-out 0.2s backwards;
+    }
+
+    .hero-subtitle {
+        font-size: 1.5rem;
+        color: rgba(255, 255, 255, 0.7);
+        margin-bottom: 48px;
+        animation: fadeInUp 1s ease-out 0.4s backwards;
+    }
+
+    .hero-buttons {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        flex-wrap: wrap;
+        animation: fadeInUp 1s ease-out 0.6s backwards;
+    }
+
+    .hero-button {
+        transition: all 0.3s ease;
+    }
+
+        .hero-button:hover {
+            transform: translateY(-4px) scale(1.05);
+            animation: glow 2s infinite;
+        }
+
+    .features-section {
+        margin-top: 100px;
+        animation: fadeInUp 1s ease-out 0.8s backwards;
+    }
+
+    .section-title {
+        text-align: center;
+        font-size: 2.5rem;
+        font-weight: 800;
+        background: linear-gradient(90deg, #7828c8 0%, #c82878 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 60px;
+    }
+
+    .feature-card {
+        height: 100%;
+        transition: all 0.3s ease;
+        animation: slideInLeft 0.8s ease-out backwards;
+        cursor: pointer;
+    }
+
+        .feature-card:hover {
+            transform: translateY(-12px);
+            box-shadow: 0 20px 60px rgba(120, 40, 200, 0.3);
+        }
+
+        .feature-card:nth-child(1) {
+            animation-delay: 0.2s;
+        }
+
+        .feature-card:nth-child(2) {
+            animation-delay: 0.4s;
+        }
+
+        .feature-card:nth-child(3) {
+            animation-delay: 0.6s;
+        }
+
+        .feature-card:nth-child(4) {
+            animation-delay: 0.8s;
+        }
+
+    .feature-icon {
+        font-size: 60px;
+        margin-bottom: 20px;
+    }
+
+    .feature-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 12px;
+    }
+
+    .feature-description {
+        color: rgba(255, 255, 255, 0.6);
+        line-height: 1.6;
+    }
+
+    .stats-section {
+        margin-top: 100px;
+        padding: 60px 0;
+        background: linear-gradient(135deg, rgba(120, 40, 200, 0.1) 0%, rgba(200, 40, 120, 0.1) 100%);
+        border-radius: 30px;
+        animation: fadeInUp 1s ease-out 1s backwards;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 40px;
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 0 40px;
+    }
+
+    .stat-item {
+        text-align: center;
+    }
+
+    .stat-number {
+        font-size: 3.5rem;
+        font-weight: 900;
+        background: linear-gradient(135deg, #7828c8 0%, #c82878 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        line-height: 1;
+        margin-bottom: 8px;
+    }
+
+    .stat-label {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 1rem;
+        font-weight: 500;
+    }
+
+    .cta-section {
+        margin-top: 100px;
+        margin-bottom: 60px;
+        text-align: center;
+        animation: fadeInUp 1s ease-out 1.2s backwards;
+    }
+
+    .cta-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 24px;
+        background: linear-gradient(90deg, #ffffff 0%, #e0e0e0 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .cta-text {
+        font-size: 1.2rem;
+        color: rgba(255, 255, 255, 0.6);
+        margin-bottom: 40px;
+    }
+</style>
+
+<div class="hero-section">
+    <div class="hero-background"></div>
+    <div class="hero-content">
+        <MudIcon Icon="@Icons.Material.Filled.Movie" Class="hero-icon" />
+        <MudText Class="hero-title">Film Manager</MudText>
+        <MudText Class="hero-subtitle">
+            Organize, manage and explore your favorite films and filmmakers
+        </MudText>
+        <div class="hero-buttons">
+            <MudButton Href="/Filmmakers"
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Size="Size.Large"
+                       StartIcon="@Icons.Material.Filled.People"
+                       Class="hero-button">
+                Explore Filmmakers
+            </MudButton>
+            <MudButton Href="/FilmByFilmmaker"
+                       Variant="Variant.Outlined"
+                       Color="Color.Secondary"
+                       Size="Size.Large"
+                       StartIcon="@Icons.Material.Filled.VideoLibrary"
+                       Class="hero-button">
+                View Films
+            </MudButton>
+        </div>
+    </div>
+</div>
+
+<div class="features-section">
+    <MudText Class="section-title">Main Features</MudText>
+    <MudGrid Spacing="6">
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper Class="feature-card pa-6" Elevation="4">
+                <div style="text-align: center;">
+                    <MudIcon Icon="@Icons.Material.Filled.People"
+                             Class="feature-icon"
+                             Style="color: #7828c8;" />
+                    <MudText Class="feature-title">Filmmakers</MudText>
+                    <MudText Class="feature-description">
+                        Register and manage information about your favorite filmmakers
+                    </MudText>
+                </div>
+            </MudPaper>
+        </MudItem>
+
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper Class="feature-card pa-6" Elevation="4">
+                <div style="text-align: center;">
+                    <MudIcon Icon="@Icons.Material.Filled.Movie"
+                             Class="feature-icon"
+                             Style="color: #c82878;" />
+                    <MudText Class="feature-title">Catalog</MudText>
+                    <MudText Class="feature-description">
+                        Organize your movie library by filmmaker or genre
+                    </MudText>
+                </div>
+            </MudPaper>
+        </MudItem>
+
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper Class="feature-card pa-6" Elevation="4">
+                <div style="text-align: center;">
+                    <MudIcon Icon="@Icons.Material.Filled.Category"
+                             Class="feature-icon"
+                             Style="color: #7828c8;" />
+                    <MudText Class="feature-title">Genres</MudText>
+                    <MudText Class="feature-description">
+                        Classify movies by multiple cinematic genres
+                    </MudText>
+                </div>
+            </MudPaper>
+        </MudItem>
+
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper Class="feature-card pa-6" Elevation="4">
+                <div style="text-align: center;">
+                    <MudIcon Icon="@Icons.Material.Filled.Search"
+                             Class="feature-icon"
+                             Style="color: #c82878;" />
+                    <MudText Class="feature-title">Quick Search</MudText>
+                    <MudText Class="feature-description">
+                        Quickly find movies and filmmakers in your collection
+                    </MudText>
+                </div>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+</div>
+
+<div class="stats-section">
+    <div class="stats-grid">
+        <div class="stat-item">
+            <div class="stat-number">
+                <MudIcon Icon="@Icons.Material.Filled.TrendingUp" Style="vertical-align: middle; margin-right: 8px;" />
+                Fast
+            </div>
+            <div class="stat-label">Optimized Performance</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">
+                <MudIcon Icon="@Icons.Material.Filled.Security" Style="vertical-align: middle; margin-right: 8px;" />
+                Safe
+            </div>
+            <div class="stat-label">Secure Data</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">
+                <MudIcon Icon="@Icons.Material.Filled.Palette" Style="vertical-align: middle; margin-right: 8px;" />
+                Modern
+            </div>
+            <div class="stat-label">Modern Design</div>
+        </div>
+    </div>
+</div>
+
+<div class="cta-section">
+    <MudText Class="cta-title">Ready to get started?</MudText>
+    <MudText Class="cta-text">
+        Start organizing your film and filmmaker collection now
+    </MudText>
+    <MudButtonGroup Variant="Variant.Outlined" Size="Size.Large">
+        <MudButton Color="Color.Primary"
+                   StartIcon="@Icons.Material.Filled.PersonAdd"
+                   Href="/RegisterFilmmaker">
+            Register Filmmaker
+        </MudButton>
+        <MudButton Color="Color.Secondary"
+                   StartIcon="@Icons.Material.Filled.Add"
+                   Href="/RegisterFilm">
+            Add Film
+        </MudButton>
+    </MudButtonGroup>
+</div>
